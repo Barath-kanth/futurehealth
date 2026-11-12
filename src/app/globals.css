@@ -1,26 +1,98 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --mist: #f3f6f4;
+  --sand: #e4ebe3;
+  --ink: #1a2420;
+  --muted: #5d6b63;
+  --cedar: #1f3d32;
+  --brass: #b89b5e;
+  --brass-deep: #8a7040;
+  --line: #c9d4cc;
+  --info-soft: #d9e8e0;
+  --watch: #8a6a1f;
+  --watch-soft: #f3e6c0;
+  --elevated: #8b3a2a;
+  --elevated-soft: #f3d6cf;
+  --urgent: #7a1f2b;
+  --urgent-soft: #f0c9cf;
+  --background: var(--mist);
+  --foreground: var(--ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #d7e4dc 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #efe6d2 0%, transparent 50%),
+    linear-gradient(180deg, #eef3ef 0%, var(--mist) 40%, #e8eee9 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100%;
+}
+
+/* Text-only accessibility mode: reduce chrome, keep readable type */
+.text-only-mode .animate-rise,
+.text-only-mode .animate-rise-delay {
+  animation: none !important;
+}
+.text-only-mode [class*="rounded-[2rem]"],
+.text-only-mode .rounded-2xl {
+  border-radius: 0.5rem;
+}
+@media (max-width: 640px) {
+  [dir="rtl"] nav a {
+    font-size: 0.7rem;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+.font-arabic {
+  font-family: var(--font-arabic), var(--font-body), sans-serif;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--brass) 45%, white);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.7s ease-out both;
+}
+
+.animate-rise-delay {
+  animation: rise-in 0.8s ease-out 0.15s both;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3.5s ease-in-out infinite;
 }

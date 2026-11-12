@@ -1,69 +1,122 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { useSeedShield } from "@/lib/store";
+import { SimulatedBadge } from "@/components/SimulatedBadge";
+
+export default function HomePage() {
+  const { locale, assessment } = useSeedShield();
+  const ar = locale === "ar";
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div>
+      <section className="relative overflow-hidden border-b border-[var(--line)]">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:grid-cols-[1.2fr_0.8fr] md:py-20">
+          <div className="animate-rise">
+            <h1 className="font-display text-5xl leading-[1.05] text-[var(--cedar)] md:text-7xl">
+              SeedShield
+            </h1>
+            <p className="mt-5 max-w-lg text-lg text-[var(--ink)]/85">
+              {ar
+                ? "يساعدك على فهم إشارات جسمك مبكرًا، ويقترح الخطوة التالية الآمنة. ليس تشخيصًا."
+                : "Helps you notice early body signals and suggests a safe next step. Not a diagnosis."}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/triage"
+                className="rounded-md bg-[var(--cedar)] px-5 py-3 text-sm font-medium text-[var(--mist)]"
+              >
+                {ar ? "ما خطوتي التالية؟" : "What’s my next step?"}
+              </Link>
+              <Link
+                href="/analyst"
+                className="rounded-md border border-[var(--cedar)] px-5 py-3 text-sm font-medium text-[var(--cedar)]"
+              >
+                {ar ? "ملفي الصحي" : "My health file"}
+              </Link>
+            </div>
+            <ol className="mt-10 max-w-md list-decimal space-y-2 ps-5 text-sm text-[var(--muted)]">
+              <li>
+                {ar
+                  ? "ننظر إلى إشارات وافقت على مشاركتها فقط."
+                  : "We only use signals you agreed to share."}
+              </li>
+              <li>
+                {ar
+                  ? "نقترح مسار رعاية بسيط — والطبيب يراجع قبل التخصص."
+                  : "We suggest a simple care path — a doctor reviews before specialty."}
+              </li>
+              <li>
+                {ar
+                  ? "أنت تقرر إن كان الطبيب يتلقى تنبيهًا."
+                  : "You decide if a doctor gets an alert."}
+              </li>
+            </ol>
+          </div>
+
+          <div className="animate-rise-delay rounded-[2rem] border border-[var(--line)] bg-[var(--cedar)] p-6 text-[var(--mist)]">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--brass)]">
+                {ar ? "خطوتك الآن" : "Your step now"}
+              </p>
+              <SimulatedBadge ar={ar} />
+            </div>
+            <div className="mt-4 font-display text-3xl leading-tight">
+              {ar ? assessment.triage.labelAr : assessment.triage.label}
+            </div>
+            <p className="mt-3 text-sm text-[var(--mist)]/80">
+              {ar
+                ? "هذا اقتراح فحص أولي. أكّد مع طبيب عند الحاجة."
+                : "This is an early-check suggestion. Confirm with a doctor when needed."}
+            </p>
+            <Link
+              href="/triage"
+              className="mt-6 inline-flex rounded-xl bg-[var(--mist)]/15 px-4 py-3 text-sm hover:bg-[var(--mist)]/25"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              {ar ? "افتح التفاصيل ←" : "Open details →"}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-12">
+        <h2 className="font-display text-2xl text-[var(--cedar)]">
+          {ar ? "اختصارات بسيطة" : "Simple shortcuts"}
+        </h2>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              t: ar ? "خصوصيتي" : "My privacy",
+              d: ar ? "ماذا نستخدم وما لا نستخدم" : "What we use — and what we don’t",
+              h: "/vault",
+            },
+            {
+              t: ar ? "أجهزتي" : "My devices",
+              d: ar ? "اربط ساعة أو طقمًا إن رغبت" : "Connect a watch or kit if you want",
+              h: "/devices",
+            },
+            {
+              t: ar ? "افعل الآن" : "Do now",
+              d: ar ? "خطوات عملية قصيرة" : "Short practical steps",
+              h: "/actions",
+            },
+            {
+              t: ar ? "حدودنا" : "Our limits",
+              d: ar ? "ما لا يفعله التطبيق" : "What this app will not do",
+              h: "/boundaries",
+            },
+          ].map((c) => (
+            <Link
+              key={c.h}
+              href={c.h}
+              className="rounded-2xl border border-[var(--line)] bg-[var(--mist)] p-4 transition hover:border-[var(--cedar)]"
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <div className="font-display text-lg text-[var(--cedar)]">{c.t}</div>
+              <p className="mt-1 text-sm text-[var(--muted)]">{c.d}</p>
+            </Link>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
     </div>
   );
 }

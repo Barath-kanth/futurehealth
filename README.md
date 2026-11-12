@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SeedShield
 
-## Getting Started
+**Male Vitality & Legacy Guardian** — culturally-anchored, privacy-first silent risk-signal prototype for the Future Health Digital Innovation Challenge (Abu Dhabi).
 
-First, run the development server:
+Not a fertility app. Not an infertility tracker. Not a sperm-optimization coach.  
+**Screening ≠ diagnosis.**
+
+## What this prototype demonstrates
+
+1. **Safe Triage centerpiece** — insufficient-info → self-care → primary care → andrology/urology → fertility (clinician-gated) → urgent, with red flags, human-review gates, and demo override  
+2. **Earlier explainable risk identification** from consented wearables, environment, work, and optional simulated home kits  
+3. **Gulf cultural trust** — bilingual EN/AR, stewardship / direct / clinical tone, zero family-choice assumptions  
+4. **Privacy vault** — granular revocable consent; **doctor alerts are opt-in**  
+5. **Illustrative MVI** — bands labeled non-validated; prefer signals + triage over the single score  
+6. **Synthetic fairness layer** — ~500 men → funnel + fairness + challenge value metrics  
+7. **GCP agent platform** — 7 linked agents on Cloud Run + Firestore + BigQuery + Scheduler + Search + Gemini (`/agents`) + Dynamic Agent (`/studio`)  
+8. **Submission pack** — `TECH.md`, `docs/SUBMISSION_HACK2SKILL.md`, clinician email one-pager, `/boundaries`  
+9. **Honesty labels** — simulated doctor, devices, kits; alcohol/lung demoted out of reproductive focus  
+10. **Genomic readiness** — consent-gated placeholder aligned with Abu Dhabi genomic care direction  
+
+Full technical brief: [`TECH.md`](./TECH.md) (also served at `/TECH.md`).
+
+## Quick start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Live agent platform (GCP)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Cloud Run:** https://seedshield-agents-fpger4i3jq-uc.a.run.app  
+- **Agents UI:** https://seedshield-agents-fpger4i3jq-uc.a.run.app/agents  
+- **Deploy / update:** `npm run deploy:gcp` (project `futurehealth-514508`)  
+- Flow: Setup → Radar → Ingest → Monitor → Investigate → Notify → Care  
+- Persist: Firestore + BigQuery (`seedshield_events`); Scheduler every 6h  
 
-## Learn More
+Copy `.env.example` → `.env.local`. Set `AGENT_PLATFORM_URL` to the Cloud Run URL to proxy local Next through the live service.
 
-To learn more about Next.js, take a look at the following resources:
+### Demo path for judges
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Age gate **18+** → one personal file  
+2. **`/triage`** — Safe Triage + book / teleconsult / text-only  
+3. `/agents` — run full multi-agent cycle (ingest → alert → book)  
+4. `/vault` — consents, cultural tone, doctor alert opt-in, genomic **placeholder**  
+5. `/analytics` — closed loop, clinician queue, fairness, safety tests  
+6. Explain: “Simulate API fail” still returns rule-engine text only  
+7. Header **Reset** clears demo state  
+8. `npm run test:triage` · see [`TECH.md`](./TECH.md)  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Optional live Vertex AI
 
-## Deploy on Vercel
+Copy `.env.example` → `.env.local` and set:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `GOOGLE_CLOUD_PROJECT=futurehealth-514508`
+- `GOOGLE_APPLICATION_CREDENTIALS`
+- optional `GOOGLE_CLOUD_LOCATION`, `VERTEX_MODEL`, `AGENT_PERSIST=gcp`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Without credentials the explain API still works via `local-fallback`; agents persist to memory.
+
+## Architecture
+
+```
+src/lib/risk-engine.ts           Signals + Safe Triage rules
+src/lib/agents/*                 7-agent orchestrator + Firestore/BQ persist
+src/lib/synthetic-population.ts  ~500 men for fairness / funnel
+src/lib/gcp/vertex.ts            Vertex AI Gemini + fallback
+src/app/agents                   Agent platform UI (Run cycle)
+src/app/api/agents/cycle         Cycle API (also on Cloud Run)
+src/app/api/agents/scheduled     Cloud Scheduler target
+src/app/triage                   Product centerpiece
+TECH.md                          Assumptions, limitations, validation plan
+scripts/deploy-gcp.sh            Budget Cloud Run + Scheduler deploy
+```
+
+## Challenge alignment
+
+| Desired outcome | Prototype surface |
+| --- | --- |
+| Safe triage & referral | `/triage` six pathways + red flags + override |
+| Earlier risk identification | Risk engine + personal findings |
+| Culturally trusted experience | AR/EN + tone picker + stewardship copy |
+| Lower-friction assessment | Age gate → triage “what happens next” |
+| Privacy by design | `/vault` consents + opt-in sharing |
+| Demonstrable value + fairness | `/analytics` synthetic cohort metrics |
+| Technical documentation | `TECH.md` |
+
+## Disclaimer
+
+Screening signals only — **not a diagnosis**. Specialty / fertility referral requires human clinical review. The app never advises starting or stopping medication. Simulated integrations are labeled on screen.

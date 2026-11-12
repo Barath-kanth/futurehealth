@@ -1,17 +1,26 @@
 {
-  "name": "seedshield-tmp",
+  "name": "seedshield",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:triage": "npx --yes tsx scripts/run-triage-safety.ts",
+    "deploy:gcp": "bash scripts/deploy-gcp.sh"
   },
   "dependencies": {
+    "@google-cloud/bigquery": "^9.6.1",
+    "@google-cloud/firestore": "^9.4.1",
+    "@google-cloud/vertexai": "^1.12.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.72.0",
     "next": "16.4.6",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "recharts": "^3.10.1",
+    "zustand": "^5.1.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",
