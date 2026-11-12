@@ -56,11 +56,13 @@ export function shouldAlertDoctor(
   return band === "low" || band === "critical" || crossedDown;
 }
 
-export function shouldAlertPatient(index: number) {
-  return index < 75;
+/** Patient nudge only on meaningful drops into lower demo bands — avoids badge spam. */
+export function shouldAlertPatient(index: number, previous?: number) {
+  if (previous !== undefined && previous - index >= 8 && index < 60) return true;
+  return index < 45;
 }
 
 export const INDEX_EXPLAIN = {
-  en: "This score is a simple guide for the demo — not a medical proof. Trust your next-step suggestion more than the number. Doctor alerts only if you turn them on.",
-  ar: "هذه الدرجة دليل بسيط للعرض — ليست إثباتًا طبيًا. ثق باقتراح خطوتك أكثر من الرقم. تنبيه الطبيب فقط إن فعّلته.",
+  en: "This demo guide score uses invented bands for the challenge walkthrough — not medical proof. Prefer Safe Triage. Doctor alerts only if you opt in.",
+  ar: "درجة إرشاد العرض بنطاقات مخترعة لجولة التحدي — ليست إثباتًا طبيًا. فضّل الفرز الآمن. تنبيه الطبيب فقط بموافقتك.",
 };

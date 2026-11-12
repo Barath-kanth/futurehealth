@@ -36,15 +36,19 @@ Upstream, privacy-first **trusted front door** for male reproductive health scre
 | Cloud Run | `seedshield-agents` via `npm run deploy:gcp` |
 | Firestore | Findings, alerts, bookings, cycles (budget vs always-on Cloud SQL) |
 
-**Seven linked agents**
+**One-sentence Amri-style EWS:** Seven linked agents watch consented signals and world context, then alert or offer booking — they **read** Safe Triage and **cannot change** it.
 
-1. **Setup** — thresholds, topics, member id  
-2. **Radar** — worldwide research (Search)  
-3. **Ingest** — realtime streams + documents + social/env fusion  
-4. **Monitor** — personal thresholds  
-5. **Investigate** — evidence chains (Gemini); does not override Safe Triage  
-6. **Notify** — patient / doctor channels  
-7. **Care** — doctor bridge + consult booking  
+| Agent | Does | Cannot |
+| --- | --- | --- |
+| Setup | Thresholds / topics | Change triage |
+| Radar | Research / Search stubs | Diagnose |
+| Ingest | Streams + docs + social/env | Bypass consent |
+| Monitor | Personal limit breaches | Override triage |
+| Investigate | Evidence narrative (Gemini optional) | Change locked tier |
+| Notify | In-app / simulated channels | Contact doctor without opt-in |
+| Care | Bridge + booking **only if user opts in** | Auto-book or auto-message clinician |
+
+**Gulf context (hypothesis, not overstated):** Elevated scrotal/ambient heat is a recognized reversible contributor in reproductive-health literature (e.g. WHO semen-lab thermal context); shift work / circadian disruption is a plausible recovery stressor. We surface these as **screening cues**, not causal proof.
 
 Deploy: `npm run deploy:gcp` (project `futurehealth-514508`). Local fallback persists to memory when GCP creds are absent.
 
@@ -95,6 +99,19 @@ Fairness chart = **author-built synthetic method demo**, not real-world bias.
 ## 7. What we don’t do
 
 See in-app `/boundaries`: no diagnosis, no medication advice, no real PHI backend, no validated accuracy claim, no auto fertility referral, no insurance/employment use.
+
+### Home-lab demo claims (honest)
+
+Finger-prick / semen kit steps on `/devices` are **simulated UI flow**. Real collection instructions must come from a **validated kit** IFU — SeedShield does not instruct clinical procedures.
+
+| Demo line | Basis | Ours |
+| --- | --- | --- |
+| Morning timing for hormone draw | Common lab practice (diurnal T variation) | Softened to “follow kit timing”; illustrative |
+| Fasting before metabolic markers | Standard lab preparation themes | Kit-dependent; demo only |
+| Semen abstinence window | WHO semen-lab collection guidance themes (6th ed.) | “As kit instructs”; not our rule |
+| PSA | Not a SeedShield reproductive triage input | **Removed** from demo steps |
+
+**MVI bands 60 / 75 / 0–44:** invented for the demo — not guideline-derived. Product surface prioritizes Safe Triage over the number.
 
 ---
 

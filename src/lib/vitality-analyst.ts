@@ -880,15 +880,60 @@ export function doctorReply(
   const lower = message.toLowerCase();
   const ar = locale === "ar";
 
+  // Safety-first: self-harm / crisis
+  if (
+    /suicid|kill myself|end my life|self[- ]?harm|hurt myself|انتحار|أؤذي نفسي|اقتل نفسي/.test(
+      lower,
+    )
+  ) {
+    return ar
+      ? `إذا كنت في خطر أو تفكر بإيذاء نفسك، اطلب مساعدة عاجلة الآن — اتصل بالطوارئ المحلية أو خط أزمة موثوق في منطقتك. SeedShield عرض فحص فقط ولا يقدّم رعاية أزمات.`
+      : `If you are in danger or thinking about harming yourself, get urgent help now — call local emergency services or a trusted crisis line in your area. SeedShield is a screening demo only and cannot provide crisis care.`;
+  }
+
+  // Red flag: sudden testicular pain → urgent care
+  if (
+    /sudden.*(testic|scrot|ball)|testic.*pain|خصي.*(ألم|فج)|ألم.*(خصي|فجائي)|torsion/.test(
+      lower,
+    ) ||
+    iv.acuteTesticularPainFlag
+  ) {
+    return ar
+      ? `ألم خصوي مفاجئ علامة حمراء. لا تنتظر التطبيق — اطلب رعاية عاجلة الآن (طوارئ/عيادة عاجلة). SeedShield فحص فقط ولا يستبعد التواء الخصية.`
+      : `Sudden testicular pain is a red flag. Do not wait on the app — seek urgent care now (ER / urgent clinic). SeedShield is screening only and cannot rule out torsion.`;
+  }
+
+  // Never advise stopping / starting medication
+  if (
+    /stop (my |the )?(med|drug|trt|testosterone|pill)|start (trt|testosterone)|أوقف.*(دواء|تستو)|ابدأ.*(تستو|trt)|quit my med/i.test(
+      lower,
+    )
+  ) {
+    return ar
+      ? `لا أنصح ببدء أو إيقاف أو تغيير أي دواء (بما في ذلك التستوستيرون). ناقش الأدوية مع طبيب مرخّص فقط. SeedShield لا يصف ولا يعدّل العلاج.`
+      : `I never advise starting, stopping, or changing any medicine (including testosterone). Discuss medicines only with a licensed clinician. SeedShield does not prescribe or adjust treatment.`;
+  }
+
+  // Fertility diagnosis question
+  if (
+    /fertil.*diagnos|diagnos.*fertil|is this about fertility diagnosis|هل هذا تشخيص خصوب/i.test(
+      lower,
+    )
+  ) {
+    return ar
+      ? `لا — هذا ليس تشخيص خصوبة. SeedShield فحص أولي فقط (فحص ≠ تشخيص). أي مسار تخصصي يحتاج مراجعة بشرية أولًا.`
+      : `No — this is not a fertility diagnosis. SeedShield is an early check only (screening ≠ diagnosis). Any specialty path needs a human clinician first.`;
+  }
+
   if (/job|work|shift|مكتب|ورد|عمل/.test(lower)) {
     return ar
-      ? `نوع عملك يظهر سحبًا مهنيًا واضحًا على مؤشرك (${index}). الورديات والجلوس والحرارة الخارجية عوامل شبه قابلة للتحكم: تفاوض على الاستراحات والتعافي، ولا نُشخّص هنا — إن استمر الإجهاد أسبوعين احجز مراجعة بشرية.`
-      : `Your job type is clearly priced into your index (${index}). Shifts, sitting, and outdoor heat are semi-controllable: negotiate breaks and recovery blocks. This is screening guidance — if strain persists 2 weeks, book a human clinical review.`;
+      ? `من ملفك، نمط العمل قد يرتبط بإجهاد وتعافٍ. الورديات والجلوس والحرارة عوامل شبه قابلة للتحكم: فترات راحة وتعافٍ. إن استمر الإجهاد أسبوعين، راجع طبيبًا — لا تشخيص هنا.`
+      : `From your file, work patterns can be associated with stress and recovery load. Shifts, sitting, and heat are semi-controllable: breaks and recovery. If strain persists 2 weeks, see a clinician — no diagnosis here.`;
   }
   if (/heat|حر|aqi|هواء|dust|غبار/.test(lower)) {
     return ar
-      ? `الحرارة وجودة الهواء غير قابلة للتحكم، لكن التعرض قابل. اليوم مؤشر الحرارة ${iv.heatIndexC}° ومؤشر الهواء ${iv.aqi}. اتبع بروتوكول التبريد وقلّل الذروة الخارجية.`
-      : `Heat and AQI are uncontrollable; exposure is not. Today heat index ${iv.heatIndexC}°C and AQI ${iv.aqi}. Run the cooling protocol and shift peak outdoor time.`;
+      ? `اليوم مؤشر الحرارة ${iv.heatIndexC}° ومؤشر الهواء ${iv.aqi} (بموافقتك). الحرارة عامل معروف في أدبيات الصحة الإنجابية كإشارة فحص — قلّل الذروة الخارجية إن أمكن.`
+      : `Today heat index ${iv.heatIndexC}°C and AQI ${iv.aqi} (with your consent). Heat is a recognized screening-relevant factor in reproductive-health literature — reduce peak outdoor exposure when you can.`;
   }
   if (/sleep|نوم|hrv|تعاف/.test(lower)) {
     return ar
@@ -897,23 +942,60 @@ export function doctorReply(
   }
   if (/fertil|خصوب|semen|منوي|testoster|هرمون/.test(lower)) {
     return ar
-      ? `نتكلم عن حيوية وإرث وفحص — وليس تشخيص عقم. إشارات الجهاز التناسلي/الهرمونات إن وُجدت توجّه لمراجعة أندروولوجيا بشرية. SeedShield لا يصدر تشخيصًا.`
-      : `We frame vitality & legacy screening — never an infertility diagnosis. Reproductive/hormone cues, when present, route to human andrology review. SeedShield does not diagnose.`;
+      ? `نتكلم عن فحص حيوية خاص — وليس تشخيص عقم، وليس واجب إنجاب. إشارات الجهاز التناسلي/الهرمونات إن وُجدت توجّه لمراجعة بشرية. SeedShield لا يصدر تشخيصًا.`
+      : `We discuss private vitality screening — never an infertility diagnosis, never a duty to have children. Reproductive/hormone cues route to human review. SeedShield does not diagnose.`;
   }
   if (/stress|قلق|نفس|psycho|anxiety|money|مال|peace|سلام/.test(lower)) {
     return ar
-      ? `من ملفك: إجهاد العمل ${iv.occupationalStress}، ضغط المال ${iv.moneyStress}، السلام ${iv.peaceIndex}. هذا سحب شخصي على القلب والتعافي — تهدئة ٣ دقائق مرتين اليوم، ومراجعة بشرية إن استمر أسبوعين.`
-      : `From your file: work stress ${iv.occupationalStress}, money stress ${iv.moneyStress}, peace ${iv.peaceIndex}. That’s a personal drag on heart & recovery — 3-min reset twice today; human review if it sticks 2 weeks.`;
+      ? `من ملفك: إجهاد العمل ${iv.occupationalStress}، ضغط المال ${iv.moneyStress}. تهدئة قصيرة اليوم؛ مراجعة بشرية إن استمر أسبوعين.`
+      : `From your file: work stress ${iv.occupationalStress}, money stress ${iv.moneyStress}. A short reset today; human review if it sticks 2 weeks.`;
   }
   if (/sdf|dna|varicocele|دوالي|trt|steroid|genetic|التهاب|meds|دواء|bmi|وزن/.test(lower)) {
     return ar
-      ? `أتحدث فقط عما في ملفك/خزنتك (SDF، دوالي، أدوية، BMI…). إن وُجد علم شخصي فالمسار: مراجعة بشرية — SeedShield لا يشخص.`
-      : `I only discuss what’s on YOUR file/vault (SDF, varicocele, meds, BMI…). If a personal flag exists, path is human review — SeedShield does not diagnose.`;
+      ? `أتحدث فقط عما في ملفك بموافقتك. إن وُجد علم شخصي فالمسار: مراجعة بشرية — SeedShield لا يشخص ولا يغيّر دواءك.`
+      : `I only discuss what’s on YOUR consented file. If a personal flag exists, path is human review — SeedShield does not diagnose or change medicines.`;
   }
 
   return ar
-    ? `مؤشرك الآن ${index} من تياراتك الحية. اسأل عن ملفك: العمل، الحرارة، النوم، المال، الجسم، الجهاز — خطوات عملية (فحص ≠ تشخيص).`
-    : `Your index is ${index} from live streams. Ask about YOUR file: work, heat, sleep, money, body, device — practical steps (screening ≠ diagnosis).`;
+    ? `اسأل عن ملفك: العمل، الحرارة، النوم، الجسم — خطوات عملية. فحص ≠ تشخيص. الدرجة التوضيحية ${index} ليست إثباتًا طبيًا.`
+    : `Ask about YOUR file: work, heat, sleep, body — practical steps. Screening ≠ diagnosis. Demo guide score ${index} is not medical proof.`;
+}
+
+/** Infer work pattern from live streams — no manual pick. */
+export function inferJobType(iv: IndependentVariables): JobTypeId {
+  const night = iv.nightShiftsPerWeek ?? 0;
+  const heatHrs = iv.outdoorHeatHours ?? 0;
+  const sedentary = iv.sedentaryHours ?? 0;
+  const stress = Math.max(iv.occupationalStress ?? 0, iv.businessStress ?? 0);
+  const caffeine = iv.caffeineMg ?? 0;
+  const activity = iv.activityMinutes ?? 0;
+  const psycho = iv.socialPressureIndex ?? 0;
+  const aqi = iv.aqi ?? 0;
+
+  const scores: Record<JobTypeId, number> = {
+    outdoor_construction:
+      heatHrs * 12 + (iv.heatIndexC ?? 0) * 0.4 + (iv.uvIndex ?? 0) * 3 + (aqi > 100 ? 15 : 0),
+    warehouse_shift:
+      (iv.shiftWork ? 40 : 0) + night * 18 + heatHrs * 4 + (activity > 120 ? 10 : 0),
+    healthcare_shift:
+      (iv.shiftWork ? 25 : 0) + night * 12 + stress * 0.35 + psycho * 0.2 + (iv.hrvTrend < -10 ? 12 : 0),
+    executive_high_stress:
+      stress * 0.55 + caffeine * 0.08 + sedentary * 2 + (iv.hrvTrend < -12 ? 15 : 0) + (iv.sleepHours < 6 ? 10 : 0),
+    driver_gig:
+      sedentary * 4 + (aqi > 90 ? 20 : 0) + (iv.ultraProcessedScore ?? 0) * 0.2 + (activity < 90 ? 8 : 0),
+    desk_knowledge:
+      sedentary * 3.5 + (activity < 80 ? 15 : 0) + (!iv.shiftWork && heatHrs < 1.5 ? 20 : 0),
+  };
+
+  let best: JobTypeId = "desk_knowledge";
+  let bestScore = -Infinity;
+  for (const [id, score] of Object.entries(scores) as [JobTypeId, number][]) {
+    if (score > bestScore) {
+      bestScore = score;
+      best = id;
+    }
+  }
+  return best;
 }
 
 export function getJob(id: JobTypeId) {

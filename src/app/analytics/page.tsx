@@ -39,6 +39,7 @@ export default function AnalyticsPage() {
     pairedDeviceIds,
     actions,
     assessment,
+    patchVariables,
   } = useSeedShield();
   const ar = locale === "ar";
 
@@ -86,6 +87,47 @@ export default function AnalyticsPage() {
           value={`${safety.passed}/${safety.total}`}
         />
       </div>
+
+      <details className="rounded-2xl border border-[var(--line)] bg-[var(--mist)] p-5">
+        <summary className="cursor-pointer font-display text-xl text-[var(--cedar)]">
+          {ar
+            ? "للمراجعين فقط (عرض): محاكاة المسارات"
+            : "For reviewers only (demo): path simulation"}
+        </summary>
+        <p className="mt-2 text-xs text-[var(--muted)]">
+          {ar
+            ? `المسار الحالي من القواعد: ${assessment.triage.labelAr}. هذه الأزرار للعرض فقط.`
+            : `Current rules path: ${assessment.triage.label}. These buttons are demo-only.`}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => patchVariables({ acuteTesticularPainFlag: true })}
+            className="rounded-md border border-[var(--urgent)] px-3 py-1.5 text-xs text-[var(--urgent)]"
+          >
+            {ar ? "محاكاة ألم مفاجئ → عاجل" : "Simulate sudden pain → urgent"}
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              patchVariables({
+                acuteTesticularPainFlag: false,
+                sleepHours: 0,
+                bmi: undefined,
+                semenConcentration: undefined,
+                testosteroneNgDl: undefined,
+                iief5Score: undefined,
+              })
+            }
+            className="rounded-md border border-[var(--line)] px-3 py-1.5 text-xs"
+          >
+            {ar ? "محاكاة بيانات رقيقة" : "Simulate thin data"}
+          </button>
+          <Link href="/triage" className="rounded-md bg-[var(--cedar)] px-3 py-1.5 text-xs text-[var(--mist)]">
+            {ar ? "افتح خطوتي (حية)" : "Open live Next step"}
+          </Link>
+        </div>
+      </details>
 
       <details className="rounded-2xl border border-[var(--line)] bg-[var(--mist)] p-5">
         <summary className="cursor-pointer font-display text-xl text-[var(--cedar)]">
@@ -237,7 +279,7 @@ export default function AnalyticsPage() {
       <section className="rounded-2xl border border-dashed border-[var(--brass)]/50 bg-[var(--watch-soft)]/40 p-4 text-sm text-[var(--watch)]">
         {ar
           ? "فجوة الرعاية: الرجال في «معلومات غير كافية» أو «رعاية ذاتية» مع علامات حمراء صامتة يظهرون هنا كفرصة متابعة صامتة — دون افتراض رغبة في الإنجاب."
-          : "Care-gap view: men in insufficient-info or self-care with silent red-flag history appear as quiet follow-up opportunities — without assuming family-building intent."}
+          : "Care-gap view: men in insufficient-info or self-care with unresolved red-flag history appear as follow-up opportunities — without assuming family-building intent."}
         <div className="mt-2 text-xs">
           {funnel.find((f) => f.tier === "insufficient_info")?.count ?? 0}{" "}
           {ar ? "معلومات غير كافية ·" : "insufficient info ·"}{" "}

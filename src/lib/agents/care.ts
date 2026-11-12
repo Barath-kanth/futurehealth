@@ -55,7 +55,8 @@ export function runCareAgent(opts: {
     simulated: true,
   });
 
-  if (opts.requestBooking || opts.triageTier === "urgent") {
+  // Never book without explicit requestBooking opt-in (including urgent).
+  if (opts.requestBooking) {
     const kind: BookingRequest["kind"] =
       opts.bookingKind ??
       (opts.triageTier === "urgent"

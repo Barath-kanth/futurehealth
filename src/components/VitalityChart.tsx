@@ -24,10 +24,10 @@ export function VitalityChart() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">
-            {ar ? "مؤشر الحيوية الشخصي" : "Personal Male Vitality Index"}
+            {ar ? "اتجاه درجة العرض (مخترعة)" : "Demo guide trend (invented bands)"}
           </p>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="font-display text-5xl text-[var(--cedar)]">
+            <span className="font-display text-2xl text-[var(--cedar)]">
               {vitalityIndex}
             </span>
             <span
@@ -41,8 +41,8 @@ export function VitalityChart() {
           </div>
           <p className="mt-1 text-xs text-[var(--muted)]">
             {ar
-              ? "يتحرك من ملفك الحي (ساعة، بيئة، عمل، مال، جسم) — فحص ≠ تشخيص."
-              : "Moves from your live file (watch, env, work, money, body) — screening ≠ diagnosis."}
+              ? "توضيحي فقط — ثق بالفرز الآمن أكثر من الرقم."
+              : "Illustrative only — trust Safe Triage more than this number."}
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">

@@ -108,7 +108,7 @@ export async function runInvestigateAgent(opts: {
       agent: "investigate",
       title: "No actionable early-warning chain",
       titleAr: "لا سلسلة إنذار مبكر قابلة للتنفيذ",
-      summary: "Quiet cycle — continue silent monitoring.",
+      summary: "Quiet cycle — continue consented watch.",
       summaryAr: "دورة هادئة — استمر بالمراقبة الصامتة.",
       severity: "info",
       evidence: [`triage=${opts.assessment.triage.tier}`],

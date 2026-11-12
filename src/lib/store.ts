@@ -23,6 +23,7 @@ import {
   computeVitalityIndex,
   doctorReply,
   getJob,
+  inferJobType,
   scoreBodyRegions,
   type ActionItem,
   type BodyRegion,
@@ -115,6 +116,8 @@ interface SeedShieldState {
   verifyAge: (birthYear: number) => { ok: boolean; message: string };
   setScenario: (id: string) => void;
   setJobType: (id: JobTypeId) => void;
+  /** Label-only sync from live streams (no manual pick, no patch overwrite). */
+  syncJobTypeFromStreams: () => void;
   patchVariables: (patch: Partial<IndependentVariables>) => void;
   toggleConsent: (key: ConsentCategory) => void;
   toggleStream: (id: DataStreamStatus["id"]) => void;
@@ -135,6 +138,10 @@ interface SeedShieldState {
   setShowWhatIf: (on: boolean) => void;
   runMonthlyCheck: () => void;
   simulateIndexDrop: () => void;
+  /** Demo: sudden testicular pain → urgent triage. */
+  simulateSuddenPain: () => void;
+  /** Demo: sparse file → insufficient_info (asks for more data). */
+  simulateThinData: () => void;
 }
 
 function withIndexAlerts(
@@ -149,7 +156,7 @@ function withIndexAlerts(
   const notes: AppNotification[] = [...derived.notifications];
   let doctorAlerts = existingDoctor;
 
-  if (shouldAlertPatient(index) && index < previousIndex - 0.5) {
+  if (shouldAlertPatient(index, previousIndex) && index < previousIndex - 0.5) {
     notes.unshift({
       id: `patient-idx-${Date.now()}`,
       title: "Your vitality index moved",
@@ -208,30 +215,33 @@ function deriveCore(
   const bodyRegions = scoreBodyRegions(variables);
   const actions = buildActions(variables, bodyRegions);
   const findings = buildPersonalFindings(persona, variables);
+  // Cap reminders so the bell count stays honest and stable for judges.
   const scenarioNotes = buildScenarioNotifications(
     variables,
     snap.index,
     bodyRegions,
     actions.length,
-  ).map((n) => ({
-    id: n.id,
-    title: n.title,
-    titleAr: n.titleAr,
-    body: n.body,
-    bodyAr: n.bodyAr,
-    doNow: n.doNow,
-    doNowAr: n.doNowAr,
-    scenario: n.scenario,
-    scenarioAr: n.scenarioAr,
-    level: n.level,
-    time: n.time,
-    href: n.href,
-    actionId: n.actionId,
-    category: n.category,
-    read: false as const,
-    done: false as const,
-    audience: "patient" as const,
-  }));
+  )
+    .slice(0, 3)
+    .map((n, i) => ({
+      id: n.id,
+      title: n.title,
+      titleAr: n.titleAr,
+      body: n.body,
+      bodyAr: n.bodyAr,
+      doNow: n.doNow,
+      doNowAr: n.doNowAr,
+      scenario: n.scenario,
+      scenarioAr: n.scenarioAr,
+      level: n.level,
+      time: n.time,
+      href: n.href,
+      actionId: n.actionId,
+      category: n.category,
+      read: i > 0,
+      done: false as const,
+      audience: "patient" as const,
+    }));
   return {
     assessment,
     vitalityIndex: snap.index,
@@ -310,6 +320,12 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
       autoMode: true,
       watchLive: true,
       showWhatIf: false,
+      doctorAlerts: [],
+      notifications: (fresh.notifications ?? []).map((n) => ({
+        ...n,
+        read: true,
+        done: false,
+      })),
       chat: [
         {
           id: "welcome",
@@ -326,11 +342,11 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
     if (age < 18) {
       return {
         ok: false,
-        message: "SeedShield individual tracking starts at age 18+.",
+        message: "SeedShield is for adults 18+.",
       };
     }
     set({ ageVerified: true, birthYear });
-    return { ok: true, message: "Welcome — your personal file is ready." };
+    return { ok: true, message: "Welcome — demo persona Omar (34) is ready." };
   },
 
   setScenario: (id) => {
@@ -360,8 +376,8 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
       notifications: [
         {
           id: `job-${id}-${Date.now()}`,
-          title: "Work calendar synced to your file",
-          titleAr: "تزامن تقويم العمل مع ملفك",
+          title: "Work calendar updated",
+          titleAr: "تحديث تقويم العمل",
           body: job.heavyImpactNote,
           bodyAr: job.heavyImpactNoteAr,
           level: "watch",
@@ -371,6 +387,27 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
         },
         ...next.notifications,
       ],
+    });
+  },
+
+  syncJobTypeFromStreams: () => {
+    const id = inferJobType(get().variables);
+    if (id === get().jobTypeId) return;
+    const job = getJob(id);
+    const notice: AppNotification = {
+      id: `job-auto-${id}-${Date.now()}`,
+      title: "Work pattern detected",
+      titleAr: "تم اكتشاف نمط العمل",
+      body: job.heavyImpactNote,
+      bodyAr: job.heavyImpactNoteAr,
+      level: "watch",
+      time: "Just now",
+      read: false,
+      audience: "patient",
+    };
+    set({
+      jobTypeId: id,
+      notifications: [notice, ...get().notifications].slice(0, 40),
     });
   },
 
@@ -680,6 +717,7 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
     if (Object.keys(patch).length === 0) return;
     const prev = get().vitalityIndex;
     const merged = mergeVariables(get().variables, patch);
+    const inferredJob = inferJobType(merged);
     const core = deriveCore(get().personaId, merged, get().streams, get().consents);
     const next = withIndexAlerts(prev, core, get().doctorAlerts, get().notifications, get().doctorAlertOptIn);
     const doneIds = new Set(
@@ -693,6 +731,7 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
         : [];
     set({
       variables: merged,
+      jobTypeId: inferredJob,
       vitalityIndex: next.vitalityIndex,
       previousIndex: next.previousIndex,
       indexBand: next.indexBand,
@@ -749,6 +788,78 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
       hrvTrend: -18,
       sleepApneaRisk: 75,
       hydrationLiters: 1.2,
+    });
+  },
+
+  simulateSuddenPain: () => {
+    // Pain flag is stripped unless self_report consent is on.
+    const consents = { ...get().consents, self_report: true };
+    const prev = get().vitalityIndex;
+    const merged = mergeVariables(get().variables, {
+      acuteTesticularPainFlag: true,
+    });
+    const core = deriveCore(get().personaId, merged, get().streams, consents);
+    set({
+      consents,
+      variables: merged,
+      explanation: null,
+      ...withIndexAlerts(
+        prev,
+        core,
+        get().doctorAlerts,
+        get().notifications,
+        get().doctorAlertOptIn,
+      ),
+    });
+  },
+
+  simulateThinData: () => {
+    // Match triage-safety "thin-data" case: sparse anchors, no specialty cues.
+    get().patchVariables({
+      acuteTesticularPainFlag: false,
+      sleepHours: 0,
+      sleepRegularity: 0,
+      bmi: undefined,
+      waistCm: undefined,
+      weightKg: undefined,
+      visceralFatScore: undefined,
+      iief5Score: undefined,
+      amsScore: undefined,
+      ipssScore: undefined,
+      semenConcentration: undefined,
+      motilityPct: undefined,
+      morphologyPct: undefined,
+      sdfPct: undefined,
+      testosteroneNgDl: undefined,
+      freeTestosteronePgMl: undefined,
+      glucoseMgDl: undefined,
+      stiRiskFlag: undefined,
+      varicoceleFlag: undefined,
+      geneticRiskFlag: undefined,
+      subclinicalInflammationFlag: undefined,
+      infectiousHistoryFlag: undefined,
+      orchitisMumpsFlag: undefined,
+      cryptorchidismFlag: undefined,
+      testicularTraumaFlag: undefined,
+      exogenousAndrogenFlag: undefined,
+      medsFertilityImpact: undefined,
+      occupationalStress: 20,
+      shiftWork: false,
+      aqi: 40,
+      heatIndexC: 25,
+      outdoorHeatHours: 0.5,
+      smokingLoad: 0,
+      alcoholUnitsWeek: 0,
+      ultraProcessedScore: 20,
+      sedentaryHours: 4,
+      screenHours: 3,
+      hrvTrend: 0,
+      bodyTempAnomaly: 0,
+      sleepApneaRisk: 0,
+      hydrationLiters: 2,
+      caffeineMg: 50,
+      moneyStress: 20,
+      businessStress: 15,
     });
   },
 }));

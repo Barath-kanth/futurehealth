@@ -42,7 +42,9 @@ export function NotificationBell() {
         <div className="absolute end-0 z-50 mt-2 w-[22rem] overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--mist)] shadow-lg">
           <div className="flex items-center justify-between border-b border-[var(--line)] px-3 py-2">
             <span className="text-xs font-semibold text-[var(--cedar)]">
-              {ar ? "تذكيرات السيناريو" : "Scenario reminders"}
+              {ar
+                ? `تذكيرات (${unread} غير مقروء)`
+                : `Reminders (${unread} unread)`}
             </span>
             <div className="flex gap-2">
               <Link

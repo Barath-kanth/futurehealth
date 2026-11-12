@@ -17,7 +17,7 @@ export default function CompanionPage() {
           {ar ? "رفيق مرحلة الحياة" : "Life-stage companion"}
         </p>
         <h1 className="mt-2 font-display text-4xl text-[var(--cedar)]">
-          {ar ? "الحيوية والإرث — مراقبة صامتة" : "Vitality & legacy — silent watch"}
+          {ar ? "الحيوية — مراقبة بموافقة" : "Vitality — consent-based watch"}
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-[var(--muted)]">
           {ar

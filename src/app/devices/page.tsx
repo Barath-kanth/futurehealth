@@ -150,8 +150,8 @@ export default function DevicesPage() {
         </div>
         <p className="text-xs text-[var(--muted)]">
           {ar
-            ? "حيثما كان مناسبًا سريريًا — عرض تدفق فقط، ليس منتجًا معتمدًا للمستهلك هنا."
-            : "Where clinically appropriate — flow demo only, not a validated consumer product claim here."}
+            ? "عرض تدفق فقط. التعليمات الحقيقية تأتي من طقم معتمد — لا تتبع هذه الخطوات كإجراء طبي."
+            : "Demo flow only. Real instructions come from a validated kit — do not follow these steps as medical procedure."}
         </p>
         <div className="grid gap-6 md:grid-cols-2">
           <ol className="space-y-2 text-sm">

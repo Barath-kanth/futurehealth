@@ -1,6 +1,6 @@
 # SeedShield
 
-**Male Vitality & Legacy Guardian** — culturally-anchored, privacy-first silent risk-signal prototype for the Future Health Digital Innovation Challenge (Abu Dhabi).
+**Male Vitality & Legacy Guardian** — culturally-anchored, privacy-first, consent-based early-check prototype for the Future Health Digital Innovation Challenge (Abu Dhabi).
 
 Not a fertility app. Not an infertility tracker. Not a sperm-optimization coach.  
 **Screening ≠ diagnosis.**

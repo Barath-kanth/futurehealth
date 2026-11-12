@@ -872,7 +872,7 @@ function buildTriage(
       label: "Self-care information",
       labelAr: "معلومات الرعاية الذاتية",
       rationale:
-        "Modifiable lifestyle and environmental cues only. Continue silent monitoring — no specialty referral.",
+        "Modifiable lifestyle and environmental cues only. Continue consented watch — no specialty referral.",
       rationaleAr:
         "إشارات نمط حياة وبيئة قابلة للتعديل فقط. استمر بالمراقبة الصامتة — دون إحالة تخصصية.",
     },

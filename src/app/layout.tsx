@@ -22,7 +22,7 @@ const arabic = Noto_Naskh_Arabic({
 export const metadata: Metadata = {
   title: "SeedShield — Male Vitality & Legacy Guardian",
   description:
-    "Culturally-anchored, privacy-first silent risk-signal system for male reproductive health upstream of specialty care. Built for the Gulf context.",
+    "Consent-based, private early-check for male reproductive health screening — you control what is shared. Built for the Gulf context. Screening ≠ diagnosis.",
 };
 
 /** Client-state app (Zustand + age gate) — allow blocking navigations. */

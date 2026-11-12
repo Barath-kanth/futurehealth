@@ -111,18 +111,18 @@ export function buildPersonalFindings(
   if (iv.aqi >= 100 || iv.plasticFoodContactScore >= 60) {
     findings.push({
       id: "pf-edc-air",
-      title: "Your environment toxin load is up",
-      titleAr: "حمل السموم البيئية لديك مرتفع",
-      aboutYou: `Abu Dhabi AQI ${iv.aqi}, plastic/food-contact score ${iv.plasticFoodContactScore}, noise ${iv.noiseDbAvg} dB.`,
-      aboutYouAr: `مؤشر هواء أبوظبي ${iv.aqi}، ملامسة البلاستيك/الطعام ${iv.plasticFoodContactScore}، ضوضاء ${iv.noiseDbAvg} ديسيل.`,
+      title: "Environment load is elevated (illustrative)",
+      titleAr: "حمل بيئي مرتفع (توضيحي)",
+      aboutYou: `Abu Dhabi AQI ${iv.aqi}, plastic/food-contact score ${iv.plasticFoodContactScore} (demo scale), noise ${iv.noiseDbAvg} dB.`,
+      aboutYouAr: `مؤشر هواء أبوظبي ${iv.aqi}، درجة ملامسة البلاستيك/الطعام ${iv.plasticFoodContactScore} (مقياس عرض)، ضوضاء ${iv.noiseDbAvg} ديسيل.`,
       whatItMeansForYou:
-        "Auto env + nutrition feeds — this is priced into your lungs and reproductive regions today.",
+        "Illustrative cue only — air and food-contact factors can be associated with oxidative stress in literature; this is not a measured fertility effect.",
       whatItMeansForYouAr:
-        "تغذية بيئة وتغذية تلقائية — مسعّر في الرئتين والمنطقة التناسلية اليوم.",
+        "إشارة توضيحية فقط — الهواء وملامسة الطعام قد يرتبطان بإجهاد تأكسدي في الأدبيات؛ ليست تأثيرًا مقاسًا على الخصوبة.",
       nextStep: "Shift outdoor tasks off peak dust; swap one plastic food container this week.",
       nextStepAr: "انقل المهام الخارجية بعيدًا عن ذروة الغبار؛ استبدل وعاء بلاستيك واحد هذا الأسبوع.",
       severity: iv.aqi >= 150 ? "elevated" : "watch",
-      confidence: "medium",
+      confidence: "low",
       source: "environment",
       control: "semi",
       category: "lifestyle_env",
@@ -444,9 +444,9 @@ export function buildPersonalFindings(
       aboutYou: `Smoking/vape load score ${iv.smokingLoad}/100 from your life-context feed.`,
       aboutYouAr: `درجة حمل التبغ/الفيب ${iv.smokingLoad}/100 من تغذية سياق حياتك.`,
       whatItMeansForYou:
-        "Oxidative and vascular drag is priced into your personal index — private, non-judgmental.",
+        "Can be associated with vascular and recovery load on your demo guide score — private, non-judgmental; not shared without opt-in.",
       whatItMeansForYouAr:
-        "السحب التأكسدي والوعائي مسعّر في مؤشرك الشخصي — خاص ودون حكم.",
+        "قد يرتبط بحمل وعائي وتعافٍ على درجة العرض — خاص ودون حكم؛ لا مشاركة دون موافقة.",
       nextStep: "Cut one daily session this week; ask doctor chat for a taper plan.",
       nextStepAr: "اخفض جلسة يومية هذا الأسبوع؛ اسأل محادثة الطبيب لخطة تدرّج.",
       severity: iv.smokingLoad >= 50 ? "elevated" : "watch",
@@ -483,16 +483,18 @@ export function buildPersonalFindings(
   if (iv.recreationalDrugFlag) {
     findings.push({
       id: "pf-drugs",
-      title: "Substance flag for clinician review",
-      titleAr: "علم مواد لمراجعة الطبيب",
-      aboutYou: "Your private file marked recreational / non-prescribed substance context.",
-      aboutYouAr: "ملفك الخاص علّم سياق مواد ترفيهية / غير موصوفة.",
+      title: "Substance flag stays private until you opt in",
+      titleAr: "علم مواد يبقى خاصًا حتى توافق",
+      aboutYou:
+        "Your private file marked recreational / non-prescribed substance context. Not for insurance or employment.",
+      aboutYouAr:
+        "ملفك الخاص علّم سياق مواد ترفيهية / غير موصوفة. ليس للتأمين أو العمل.",
       whatItMeansForYou:
-        "No in-app judgment — assigned doctor can discuss safely if you choose.",
+        "Never shared with a doctor unless you opt in (Vault / Quiet watch). No in-app judgment.",
       whatItMeansForYouAr:
-        "بلا حكم داخل التطبيق — طبيبك المعيَّن يمكنه النقاش بأمان إن اخترت.",
-      nextStep: "Use doctor chat when ready; do not stop prescribed meds alone.",
-      nextStepAr: "استخدم محادثة الطبيب عند الجاهزية؛ لا توقف أدوية موصوفة وحدك.",
+        "لا يُشارك مع طبيب إلا بموافقتك (الخزنة / المراقبة). بلا حكم داخل التطبيق.",
+      nextStep: "Use doctor chat only when ready; do not stop prescribed meds alone.",
+      nextStepAr: "استخدم محادثة الطبيب عند الجاهزية فقط؛ لا توقف أدوية موصوفة وحدك.",
       severity: "elevated",
       confidence: "low",
       source: "self_report",

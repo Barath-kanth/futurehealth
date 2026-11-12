@@ -17,8 +17,13 @@ export default function ActionsPage() {
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">
           {ar
-            ? `${actions.length} توصيات شخصية مبنية على مؤشر ${vitalityIndex} والفرز الآمن.`
-            : `${actions.length} personal recommendations from index ${vitalityIndex} and Safe Triage.`}
+            ? `${actions.length} توصيات شخصية من قواعد المؤشر (${vitalityIndex}) والفرز الآمن — ليست مخرجات Gemini.`
+            : `${actions.length} personal recommendations from the rules engine (index ${vitalityIndex}) + Safe Triage — not Gemini output.`}
+        </p>
+        <p className="mt-1 text-xs text-[var(--muted)]">
+          {ar
+            ? "شخصية العرض: عمر، ٣٤. الحجز/الطبيب محاكاة."
+            : "Demo persona: Omar, 34. Booking / doctor are simulated."}
         </p>
       </header>
 

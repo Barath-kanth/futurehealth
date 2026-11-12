@@ -3,20 +3,20 @@ import type { DataStreamId, Persona } from "./types";
 
 const extras = defaultExtras();
 
-/** Single individual member — age 18+ personal app (not a multi-persona demo). */
+/** Pre-loaded demo persona for judges — not a real patient. */
 export const ME: Persona = {
   id: "me",
-  name: "You · Personal file",
-  nameAr: "أنت · الملف الشخصي",
-  age: 28,
+  name: "Omar",
+  nameAr: "عمر",
+  age: 34,
   nationality: "UAE resident",
   maritalStatus: "prefer_not_to_say",
-  occupation: "Member · tracked from age 18+",
+  occupation: "Demo persona · Abu Dhabi",
   city: "Abu Dhabi",
   summary:
-    "Your private vitality file. Streams attach from watch, phone, PC, environment, monthly body check, and optional home kit.",
+    "Pre-loaded demo persona for the challenge walkthrough. Synthetic signals — not a real patient file.",
   summaryAr:
-    "ملف حيويتك الخاص. تيارات من الساعة والهاتف والحاسوب والبيئة وفحص الجسم الشهري وطقم منزلي اختياري.",
+    "شخصية عرض مسبقة التحميل لجولة التحدي. إشارات اصطناعية — ليست ملف مريض حقيقي.",
   consents: {
     wearable: true,
     at_home_device: false,
@@ -125,8 +125,8 @@ export const PAIRABLE_DEVICES: PairableDevice[] = [
     how: "Bluetooth pair → sleep, HRV, temp, apnea proxy (demo sync).",
     howAr: "اقتران بلوتوث → نوم وHRV وحرارة ووكيل انقطاع نفس (مزامنة عرض).",
     reliability: "high",
-    creativeHook: "Your wrist becomes the silent engine — no forms.",
-    creativeHookAr: "معصمك يصبح المحرك الصامت — بلا نماذج.",
+    creativeHook: "Wrist sensors feed your consented file — no forms.",
+    creativeHookAr: "مستشعرات المعصم تغذي ملفك بموافقتك — بلا نماذج.",
     category: "core",
     simulated: true,
   },
@@ -305,7 +305,7 @@ export const PAIRABLE_DEVICES: PairableDevice[] = [
     how: "Prototype: discreet kit → QR → private room → encrypted count/motility/morphology/SDF. Mock data.",
     howAr: "نموذج: طقم كتوم → QR → غرفة خاصة → عدد/حركة/شكل/SDF مشفّر. بيانات وهمية.",
     reliability: "medium",
-    creativeHook: "Legacy Lab demo — vault only (+ doctor if you opt in).",
+    creativeHook: "Simulated home-lab demo — vault only (+ doctor if you opt in).",
     creativeHookAr: "عرض مختبر الإرث — الخزنة فقط (+ طبيب إن وافقت).",
     category: "lab",
     simulated: true,
@@ -320,7 +320,7 @@ export const PAIRABLE_DEVICES: PairableDevice[] = [
     how: "Optional med list — flags TRT/steroids/impact meds.",
     howAr: "قائمة أدوية اختيارية — تعلّم TRT/ستيرويد/مؤثرة.",
     reliability: "medium",
-    creativeHook: "Meds that feel fine still appear on your map.",
+    creativeHook: "Consented meds list stays on your map — never shared without opt-in.",
     creativeHookAr: "أدوية تبدو عادية ما زالت على خريطتك.",
     category: "lab",
     simulated: true,

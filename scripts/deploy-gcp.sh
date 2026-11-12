@@ -35,11 +35,13 @@ gcloud run deploy "$SERVICE" \
   --source=. \
   --region="$REGION" \
   --allow-unauthenticated \
-  --memory=512Mi \
-  --cpu=1 \
-  --min-instances=0 \
+  --memory=2Gi \
+  --cpu=2 \
+  --min-instances=1 \
   --max-instances=3 \
   --timeout=300 \
+  --cpu-boost \
+  --no-cpu-throttling \
   --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT,BQ_DATASET=$DATASET,FIRESTORE_COLLECTION=seedshield,AGENT_SCHEDULER_SECRET=$SECRET,AGENT_PERSIST=gcp,VERTEX_MODEL=gemini-2.0-flash-001" \
   --quiet
 
@@ -64,4 +66,4 @@ echo "  Cloud Run:  $URL"
 echo "  Agents UI:  $URL/agents"
 echo "  Scheduler:  $JOB (every 6h)"
 echo "  Set local AGENT_PLATFORM_URL=$URL if Next should proxy to Cloud Run"
-echo "  Keep min-instances=0 for budget (cold starts OK for demo)"
+echo "  min-instances=1 + 2Gi + always-on CPU (avoids OOM / 10s stalls). Set min=0 + cpu-throttling after judging to save budget."

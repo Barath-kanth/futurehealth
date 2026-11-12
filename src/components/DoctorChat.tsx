@@ -5,10 +5,10 @@ import { useSeedShield } from "@/lib/store";
 import clsx from "clsx";
 
 const QUICK = [
-  { en: "How is my job affecting me?", ar: "كيف يؤثر عملي عليّ؟" },
-  { en: "What should I do about heat?", ar: "ماذا أفعل تجاه الحرارة؟" },
-  { en: "Explain my body map", ar: "اشرح خريطة جسمي" },
   { en: "Is this about fertility diagnosis?", ar: "هل هذا تشخيص خصوبة؟" },
+  { en: "Should I stop my medication?", ar: "هل أوقف دوائي؟" },
+  { en: "Sudden testicular pain", ar: "ألم خصوي مفاجئ" },
+  { en: "What should I do about heat?", ar: "ماذا أفعل تجاه الحرارة؟" },
 ];
 
 export function DoctorChat() {

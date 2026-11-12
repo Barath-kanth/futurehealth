@@ -13,7 +13,8 @@ import { useSeedShield } from "@/lib/store";
 import Link from "next/link";
 
 export default function AnalystPage() {
-  const { locale, showWhatIf, setShowWhatIf, autoMode } = useSeedShield();
+  const { locale, showWhatIf, setShowWhatIf, autoMode, assessment, culturalTone } =
+    useSeedShield();
   const ar = locale === "ar";
 
   return (
@@ -21,15 +22,22 @@ export default function AnalystPage() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--brass-deep)]">
-            {ar ? "ملفك الشخصي فقط" : "Your file only"}
+            {ar ? "ملفك · عمر ٣٤ (عرض)" : "Your file · Omar 34 (demo)"}
           </p>
           <h1 className="mt-2 font-display text-4xl text-[var(--cedar)] md:text-5xl">
-            {ar ? "مؤشر الحيوية الشخصي" : "Personal Male Vitality Index"}
+            {ar ? "ملفي الصحي" : "My health file"}
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-[var(--muted)]">
             {ar
-              ? "لا ملفات تجريبية متعددة. جهازك وبيئتك وعملك وجسمك يحرّكون المؤشر. دون ٦٠ → تنبيه لك ولطبيبك."
-              : "No multi-demo profiles. Your devices, environment, work, and body move the index. Below 60 → alert to you and your doctor."}
+              ? "الفرز الآمن أولًا. الدرجة التوضيحية مخفية افتراضيًا. نبرة العرض: "
+              : "Safe Triage first. Demo guide score is hidden by default. Demo tone: "}
+            <strong>{culturalTone}</strong>
+          </p>
+          <p className="mt-2 text-sm text-[var(--cedar)]">
+            {ar ? "خطوتك:" : "Your step:"}{" "}
+            <Link href="/triage" className="underline font-medium">
+              {ar ? assessment.triage.labelAr : assessment.triage.label}
+            </Link>
           </p>
           {autoMode && (
             <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs text-emerald-800">
@@ -39,31 +47,20 @@ export default function AnalystPage() {
           )}
         </div>
         <div className="flex flex-wrap gap-2">
+          <Link href="/triage" className="rounded-md bg-[var(--cedar)] px-3 py-2 text-xs text-[var(--mist)]">
+            {ar ? "خطوتي" : "Next step"}
+          </Link>
+          <Link href="/vault" className="rounded-md border border-[var(--cedar)] px-3 py-2 text-xs text-[var(--cedar)]">
+            {ar ? "الخصوصية" : "Privacy"}
+          </Link>
           <Link href="/devices" className="rounded-md border border-[var(--cedar)] px-3 py-2 text-xs text-[var(--cedar)]">
             {ar ? "الأجهزة" : "Devices"}
-          </Link>
-          <Link href="/body" className="rounded-md border border-[var(--cedar)] px-3 py-2 text-xs text-[var(--cedar)]">
-            {ar ? "الجسم" : "Body"}
-          </Link>
-          <Link href="/chat" className="rounded-md bg-[var(--cedar)] px-3 py-2 text-xs text-[var(--mist)]">
-            {ar ? "الطبيب" : "Doctor"}
           </Link>
         </div>
       </header>
 
       <ProfileSnapshot />
-      <IndexBandMeter />
-      <DataStreamsPanel />
-      <VitalityChart />
-      <WatchLive />
       <PersonalFindings />
-
-      <section className="space-y-3">
-        <h2 className="font-display text-2xl text-[var(--cedar)]">
-          {ar ? "تقويم العمل (من حاسوبك)" : "Work calendar (from your PC)"}
-        </h2>
-        <JobTypePicker />
-      </section>
 
       <section className="space-y-3">
         <h2 className="font-display text-2xl text-[var(--cedar)]">
@@ -72,26 +69,42 @@ export default function AnalystPage() {
         <ActionCards />
       </section>
 
-      <section className="rounded-2xl border border-dashed border-[var(--line)] p-4">
-        <button
-          type="button"
-          onClick={() => setShowWhatIf(!showWhatIf)}
-          className="text-sm font-medium text-[var(--cedar)]"
-        >
-          {showWhatIf
-            ? ar
-              ? "إخفاء ماذا-لو"
-              : "Hide what-if"
-            : ar
-              ? "اختياري: ماذا-لو"
-              : "Optional: what-if"}
-        </button>
-        {showWhatIf && (
-          <div className="mt-4">
-            <FactorBoard />
-          </div>
-        )}
-      </section>
+      <details className="rounded-2xl border border-dashed border-[var(--line)] p-4">
+        <summary className="cursor-pointer font-display text-xl text-[var(--cedar)]">
+          {ar
+            ? "درجة العرض التوضيحية (مخفية افتراضيًا) + تيارات"
+            : "Demo guide score (optional) + streams"}
+        </summary>
+        <div className="mt-4 space-y-6">
+          <IndexBandMeter />
+          <DataStreamsPanel />
+          <WatchLive />
+          <VitalityChart />
+        </div>
+      </details>
+
+      <details className="rounded-2xl border border-dashed border-[var(--line)] p-4">
+        <summary className="cursor-pointer font-display text-xl text-[var(--cedar)]">
+          {ar ? "تقويم العمل والعافية العامة" : "Work calendar & general wellness"}
+        </summary>
+        <div className="mt-4 space-y-6">
+          <JobTypePicker />
+          <button
+            type="button"
+            onClick={() => setShowWhatIf(!showWhatIf)}
+            className="text-sm font-medium text-[var(--cedar)]"
+          >
+            {showWhatIf
+              ? ar
+                ? "إخفاء ماذا-لو"
+                : "Hide what-if"
+              : ar
+                ? "اختياري: ماذا-لو"
+                : "Optional: what-if"}
+          </button>
+          {showWhatIf && <FactorBoard />}
+        </div>
+      </details>
     </div>
   );
 }

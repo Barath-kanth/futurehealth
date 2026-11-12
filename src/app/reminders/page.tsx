@@ -63,7 +63,7 @@ export default function RemindersPage() {
           <p className="rounded-xl border border-[var(--line)] bg-[var(--mist)] p-4 text-sm text-[var(--muted)]">
             {ar
               ? "لا تذكيرات — المراقبة الصامتة مستمرة."
-              : "No reminders — silent monitoring continues."}
+              : "No reminders — consented watch continues."}
           </p>
         )}
         {pending.map((n) => (

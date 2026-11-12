@@ -8,7 +8,7 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
   const ar = locale === "ar";
   const [year, setYear] = useState(1996);
   const [error, setError] = useState("");
-  // UAE adult marriage age 18+ (fixed ceiling avoids Date during prerender)
+  // Adults 18+ (fixed ceiling avoids Date during prerender)
   const maxBirthYear = 2008;
 
   return (
@@ -25,12 +25,12 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
             SeedShield
           </p>
           <h1 className="mt-3 font-display text-4xl text-[var(--cedar)]">
-            {ar ? "تطبيق فردي للرجال ١٨+" : "Individual app for men 18+"}
+            {ar ? "للبالغين ١٨+" : "For adults 18+"}
           </h1>
           <p className="mt-3 text-sm text-[var(--muted)]">
             {ar
-              ? "متوافق مع سن الزواج القانوني في الإمارات (١٨+). ملف حيوية واحد — ملفك أنت فقط."
-              : "Aligned with UAE legal marriage age (18+). One vitality file — yours only."}
+              ? "فحص فردي خاص لصحة الرجل. بوابة لمرة واحدة في هذه الجلسة — لا نفترض الزواج أو الرغبة في الإنجاب."
+              : "A private individual health check for men. One-time gate this session — we never assume marriage or family-building goals."}
           </p>
           <label className="mt-8 text-sm text-[var(--ink)]">
             {ar ? "سنة الميلاد" : "Birth year"}
@@ -52,7 +52,7 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
               if (!res.ok) setError(res.message);
             }}
           >
-            {ar ? "ادخل ملفي الشخصي" : "Enter my personal file"}
+            {ar ? "ابدأ" : "Continue"}
           </button>
         </div>
       )}

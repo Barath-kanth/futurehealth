@@ -5,7 +5,7 @@ import { ME } from "@/lib/me-profile";
 import Link from "next/link";
 
 export function ProfileSnapshot() {
-  const { variables, vitalityIndex, locale, findings, pairedDeviceIds, assignedDoctor } =
+  const { variables, locale, findings, pairedDeviceIds, assignedDoctor, assessment } =
     useSeedShield();
   const ar = locale === "ar";
 
@@ -29,10 +29,10 @@ export function ProfileSnapshot() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--brass)]">
-            {ar ? "ملفك الشخصي · ١٨+" : "Your personal file · 18+"}
+            {ar ? "عرض · عمر ٣٤ · ١٨+" : "Demo · Omar 34 · 18+"}
           </p>
           <h2 className="mt-1 font-display text-3xl">
-            {ar ? "أنت" : "You"}
+            {ar ? ME.nameAr : ME.name}
           </h2>
           <p className="mt-1 text-sm text-[var(--mist)]/75">
             {ar ? ME.summaryAr : ME.summary}
@@ -42,16 +42,18 @@ export function ProfileSnapshot() {
             {ar ? assignedDoctor.nameAr : assignedDoctor.name}
           </p>
         </div>
-        <div className="text-end">
+        <div className="text-end max-w-[14rem]">
           <div className="text-[10px] uppercase tracking-wide text-[var(--brass)]">
-            {ar ? "المؤشر" : "Index"}
+            {ar ? "خطوتك (ليست الدرجة)" : "Your step (not the score)"}
           </div>
-          <div className="font-display text-4xl">{vitalityIndex}</div>
+          <div className="font-display text-2xl leading-tight">
+            {ar ? assessment.triage.labelAr : assessment.triage.label}
+          </div>
           <div className="text-xs text-[var(--mist)]/70">
             {findings.length} {ar ? "إشارات" : "cues"}
           </div>
-          <Link href="/devices" className="mt-2 inline-block text-xs text-[var(--brass)] underline">
-            {ar ? "إدارة الأجهزة" : "Manage devices"}
+          <Link href="/triage" className="mt-2 inline-block text-xs text-[var(--brass)] underline">
+            {ar ? "فتح خطوتي" : "Open next step"}
           </Link>
         </div>
       </div>

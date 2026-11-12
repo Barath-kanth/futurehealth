@@ -3,61 +3,53 @@
 import { CareAccessPanel } from "@/components/CareAccessPanel";
 import { SimulatedBadge } from "@/components/SimulatedBadge";
 import { TriageBadge } from "@/components/SeverityBadge";
+import { CONSENT_LABELS, consentForSource } from "@/lib/signal-consent";
 import { useSeedShield } from "@/lib/store";
 import type { TriageTier } from "@/lib/types";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-const PATHS: {
-  tier: TriageTier;
-  en: string;
-  ar: string;
-  detail: string;
-  detailAr: string;
-}[] = [
-  {
-    tier: "insufficient_info",
+const PATH_COPY: Record<
+  TriageTier,
+  { en: string; ar: string; detail: string; detailAr: string }
+> = {
+  insufficient_info: {
     en: "Need a bit more information",
     ar: "نحتاج معلومات أكثر قليلًا",
     detail: "Add a device or a short check-in before we suggest a path.",
     detailAr: "أضف جهازًا أو متابعة قصيرة قبل اقتراح المسار.",
   },
-  {
-    tier: "self_care",
+  self_care: {
     en: "Self-care at home",
     ar: "رعاية ذاتية في المنزل",
     detail: "Focus on heat, sleep, water, and air. No clinic visit needed now.",
     detailAr: "ركّز على الحرارة والنوم والماء والهواء. لا زيارة عيادة الآن.",
   },
-  {
-    tier: "primary_care",
+  primary_care: {
     en: "See a primary doctor",
     ar: "راجع طبيبًا أوليًا",
     detail: "A general doctor can review your signals privately.",
     detailAr: "طبيب عام يمكنه مراجعة إشاراتك بخصوصية.",
   },
-  {
-    tier: "andrology_urology",
+  andrology_urology: {
     en: "Men’s reproductive specialist",
     ar: "أخصائي صحة الرجل التناسلية",
-    detail: "A specialist reviews after a doctor looks at your file — not an app diagnosis.",
-    detailAr: "يراجع أخصائي بعد نظر الطبيب في ملفك — ليس تشخيص تطبيق.",
+    detail: "A specialist reviews after a doctor looks first — not an app diagnosis.",
+    detailAr: "يراجع أخصائي بعد نظر الطبيب أولًا — ليس تشخيص تطبيق.",
   },
-  {
-    tier: "fertility_services",
+  fertility_services: {
     en: "Fertility clinic (doctor must approve)",
     ar: "عيادة خصوبة (بموافقة الطبيب)",
     detail: "We never send you there automatically.",
     detailAr: "لا نرسلك تلقائيًا أبدًا.",
   },
-  {
-    tier: "urgent",
+  urgent: {
     en: "Get care now",
     ar: "اطلب الرعاية الآن",
     detail: "Warning signs need urgent medical care — do not wait on the app.",
     detailAr: "علامات تحذير تحتاج رعاية عاجلة — لا تنتظر التطبيق.",
   },
-];
+};
 
 export default function TriagePage() {
   const {
@@ -66,14 +58,69 @@ export default function TriagePage() {
     doctorAlertOptIn,
     setDoctorAlertOptIn,
     assignedDoctor,
-    patchVariables,
+    variables,
+    consents,
+    vitalityIndex,
+    watchLive,
+    recompute,
+    simulateSuddenPain,
+    simulateThinData,
+    resetDemoData,
   } = useSeedShield();
   const ar = locale === "ar";
   const t = assessment.triage;
-  const [override, setOverride] = useState<TriageTier | null>(null);
-  const [overrideNote, setOverrideNote] = useState("");
+  const [tick, setTick] = useState(0);
 
-  const activeTier = override ?? t.tier;
+  // Keep page feeling live while Watch streams update the store
+  useEffect(() => {
+    if (!watchLive) return;
+    const id = setInterval(() => {
+      recompute();
+      setTick((n) => n + 1);
+    }, 5000);
+    return () => clearInterval(id);
+  }, [watchLive, recompute]);
+
+  const activePath = PATH_COPY[t.tier];
+
+  const usedSignals = useMemo(() => {
+    return assessment.signals.slice(0, 10).map((s) => {
+      const cat = consentForSource(s.source);
+      return {
+        id: s.id,
+        title: ar ? s.titleAr : s.title,
+        severity: s.severity,
+        consent: CONSENT_LABELS[cat],
+        agreed: consents[cat],
+        drivers: s.drivers.slice(0, 2),
+      };
+    });
+  }, [assessment.signals, consents, ar]);
+
+  const liveMeters = useMemo(
+    () => [
+      consents.environment
+        ? { label: ar ? "حرارة" : "Heat", value: `${variables.heatIndexC}°C` }
+        : null,
+      consents.environment
+        ? { label: "AQI", value: String(variables.aqi) }
+        : null,
+      consents.wearable
+        ? { label: ar ? "نوم" : "Sleep", value: `${variables.sleepHours}h` }
+        : null,
+      consents.wearable || consents.self_report
+        ? {
+            label: ar ? "إجهاد العمل" : "Work stress",
+            value: String(Math.round(variables.occupationalStress)),
+          }
+        : null,
+    ].filter(Boolean) as { label: string; value: string }[],
+    [ar, consents, variables],
+  );
+
+  const evaluatedAt = assessment.generatedAt
+    ? new Date(assessment.generatedAt).toLocaleTimeString()
+    : "—";
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-10">
@@ -81,60 +128,117 @@ export default function TriagePage() {
         <h1 className="font-display text-4xl text-[var(--cedar)]">
           {ar ? "خطوتي التالية" : "My next step"}
         </h1>
-        <p className="mt-2 text-sm text-[var(--muted)]">
+        <p className="mt-2 text-sm text-[var(--cedar)]">
           {ar
-            ? "اقتراح بسيط وآمن. فحص أولي — ليس تشخيصًا."
-            : "A simple, safe suggestion. Early check — not a diagnosis."}
+            ? "نستخدم فقط الإشارات التي وافقت على مشاركتها."
+            : "We only use signals you agreed to share."}
         </p>
+        <p className="mt-1 text-sm text-[var(--muted)]">
+          {ar
+            ? `شخصية العرض: عمر، ٣٤ · محدّث ${evaluatedAt} · مؤشر ${vitalityIndex}`
+            : `Demo persona: Omar, 34 · updated ${evaluatedAt} · index ${vitalityIndex}`}
+          {watchLive ? (ar ? " · مراقبة حية" : " · live watch") : null}
+          <span className="sr-only">{tick}</span>
+        </p>
+        <Link href="/vault" className="mt-2 inline-block text-xs text-[var(--cedar)] underline">
+          {ar ? "راجع الموافقات" : "Review consents"}
+        </Link>
       </header>
+
+      {liveMeters.length > 0 && (
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {liveMeters.map((m) => (
+            <div
+              key={m.label}
+              className="rounded-xl border border-[var(--line)] bg-[var(--mist)] px-3 py-3"
+            >
+              <div className="text-[10px] uppercase tracking-wide text-[var(--muted)]">
+                {m.label}
+              </div>
+              <div className="mt-1 font-display text-xl text-[var(--cedar)]">
+                {m.value}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <section className="rounded-2xl border border-dashed border-[var(--line)] bg-[var(--mist)] p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="text-sm font-semibold text-[var(--cedar)]">
+            {ar ? "محاكاة للعرض (حكام)" : "Demo simulations (judges)"}
+          </h2>
+          <SimulatedBadge ar={ar} />
+        </div>
+        <p className="mt-1 text-xs text-[var(--muted)]">
+          {ar
+            ? "جرّب مسارين للسلامة، ثم أعد عمر."
+            : "Try two safety paths, then restore Omar."}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => simulateSuddenPain()}
+            className="rounded-md bg-[var(--urgent)] px-3 py-2 text-xs font-medium text-[var(--mist)]"
+          >
+            {ar ? "محاكاة ألم مفاجئ" : "Simulate sudden pain"}
+          </button>
+          <button
+            type="button"
+            onClick={() => simulateThinData()}
+            className="rounded-md border border-[var(--line)] bg-[var(--sand)] px-3 py-2 text-xs font-medium text-[var(--cedar)]"
+          >
+            {ar ? "محاكاة بيانات قليلة" : "Simulate thin data"}
+          </button>
+          <button
+            type="button"
+            onClick={() => resetDemoData()}
+            className="rounded-md border border-[var(--line)] px-3 py-2 text-xs text-[var(--muted)]"
+          >
+            {ar ? "إعادة عمر" : "Restore Omar"}
+          </button>
+        </div>
+      </section>
 
       <div className="rounded-2xl border border-[var(--cedar)] bg-[var(--cedar)] p-6 text-[var(--mist)]">
         <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--brass)]">
-          <span>{ar ? "الخطوة التالية الموصى بها" : "Recommended next step"}</span>
-          {override && <SimulatedBadge label="Human override" labelAr="تجاوز بشري" ar={ar} />}
+          <span>{ar ? "خطوتك الآن (حية)" : "Your step now (live)"}</span>
+          <TriageBadge tier={t.tier} />
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <span className="font-display text-3xl">
-            {ar
-              ? PATHS.find((p) => p.tier === activeTier)?.ar ?? t.labelAr
-              : PATHS.find((p) => p.tier === activeTier)?.en ?? t.label}
-          </span>
-          <TriageBadge tier={activeTier} />
+        <div className="mt-3 font-display text-3xl leading-tight">
+          {ar ? activePath.ar : activePath.en}
         </div>
         <p className="mt-3 text-sm text-[var(--mist)]/85">
-          {override
-            ? ar
-              ? `تجاوز سريري مسجّل: ${overrideNote || "بدون ملاحظة"}`
-              : `Clinician override logged: ${overrideNote || "no note"}`
-            : ar
-              ? t.rationaleAr
-              : t.rationale}
+          {ar ? t.rationaleAr : t.rationale}
         </p>
-        {t.requiresHumanReview && !override && (
+        <p className="mt-2 text-sm text-[var(--mist)]/75">
+          {ar ? activePath.detailAr : activePath.detail}
+        </p>
+        {t.requiresHumanReview && (
           <p className="mt-4 rounded-lg bg-[var(--mist)]/10 px-3 py-2 text-xs">
             {ar
-              ? "بوابة مراجعة بشرية: مفعّلة — لا إحالة تخصصية تلقائية."
-              : "Human review gate: ACTIVE — no automatic specialty referral."}
+              ? "مراجعة بشرية مطلوبة — لا إحالة تخصصية تلقائية."
+              : "Human review required — no automatic specialty referral."}
           </p>
         )}
         <div className="mt-4 flex flex-wrap gap-2 text-xs">
           <Link
-            href="/reminders"
+            href="/agents"
             className="rounded-md bg-[var(--mist)]/15 px-3 py-2 hover:bg-[var(--mist)]/25"
           >
-            {ar ? "ماذا أفعل الآن" : "What to do now"} →
+            {ar ? "المراقبة" : "Quiet watch"} →
+          </Link>
+          <Link
+            href="/actions"
+            className="rounded-md bg-[var(--mist)]/15 px-3 py-2 hover:bg-[var(--mist)]/25"
+          >
+            {ar ? "افعل الآن" : "Do now"} →
           </Link>
           <Link
             href="/chat"
             className="rounded-md bg-[var(--mist)]/15 px-3 py-2 hover:bg-[var(--mist)]/25"
           >
-            {ar ? "محادثة (محاكاة)" : "Chat (simulated)"} →
-          </Link>
-          <Link
-            href="/analytics"
-            className="rounded-md bg-[var(--mist)]/15 px-3 py-2 hover:bg-[var(--mist)]/25"
-          >
-            {ar ? "مقاييس المجموعة" : "Cohort metrics"} →
+            {ar ? "الطبيب" : "Doctor"} →
           </Link>
         </div>
       </div>
@@ -142,7 +246,7 @@ export default function TriagePage() {
       {t.redFlags.length > 0 && (
         <section className="rounded-xl border border-[var(--urgent)]/30 bg-[var(--urgent-soft)] p-4">
           <h2 className="text-sm font-semibold text-[var(--urgent)]">
-            {ar ? "علامات حمراء (من بياناتك بموافقة)" : "Red flags (from your consented data)"}
+            {ar ? "علامات تحتاج انتباهًا" : "Signals that need attention"}
           </h2>
           <ul className="mt-2 list-disc space-y-1 ps-5 text-sm text-[var(--urgent)]">
             {t.redFlags.map((f) => (
@@ -152,119 +256,63 @@ export default function TriagePage() {
         </section>
       )}
 
-      <section className="space-y-3">
-        <h2 className="font-display text-2xl text-[var(--cedar)]">
-          {ar ? "مسارات الفرز الستة (قابلة للتدقيق)" : "Six auditable triage paths"}
-        </h2>
-        {PATHS.map((p) => {
-          const active = p.tier === activeTier;
-          return (
-            <div
-              key={p.tier}
-              className={
-                active
-                  ? "rounded-xl border-2 border-[var(--cedar)] bg-[var(--mist)] p-4"
-                  : "rounded-xl border border-[var(--line)] bg-[var(--mist)]/60 p-4 opacity-70"
-              }
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="font-medium text-[var(--cedar)]">
-                  {ar ? p.ar : p.en}
-                </div>
-                {active && (
-                  <span className="text-[10px] uppercase tracking-wide text-[var(--brass-deep)]">
-                    {ar ? "نشط لملفك" : "Active for your file"}
-                  </span>
-                )}
-              </div>
-              <p className="mt-1 text-xs text-[var(--muted)]">
-                {ar ? p.detailAr : p.detail}
-              </p>
-            </div>
-          );
-        })}
-      </section>
-
-      <section className="rounded-2xl border border-[var(--line)] bg-[var(--mist)] p-5 space-y-3">
+      <section className="rounded-2xl border border-[var(--line)] bg-[var(--mist)] p-5">
         <h2 className="font-display text-xl text-[var(--cedar)]">
-          {ar ? "تجاوز بشري (عرض)" : "Human override (demo)"}
+          {ar ? "ما استُخدم في هذه الخطوة" : "What this step used"}
         </h2>
-        <p className="text-xs text-[var(--muted)]">
+        <p className="mt-1 text-xs text-[var(--muted)]">
           {ar
-            ? "في الإنتاج يسجّل الطبيب التجاوز مع السبب. هنا يمكنك تجربة المسار."
-            : "In production a clinician logs override + reason. Here you can try the pathway."}
+            ? `${usedSignals.length} إشارة من المحرك الآن — كل واحدة مربوطة بموافقة.`
+            : `${usedSignals.length} live engine signals — each tied to a consent.`}
         </p>
-        <div className="flex flex-wrap gap-2">
-          {PATHS.map((p) => (
-            <button
-              key={p.tier}
-              type="button"
-              onClick={() => setOverride(p.tier)}
-              className="rounded-md border border-[var(--line)] px-3 py-1.5 text-xs hover:bg-[var(--sand)]"
+        <ul className="mt-3 space-y-2 text-sm">
+          {usedSignals.length === 0 && (
+            <li className="text-[var(--muted)]">
+              {ar ? "لا إشارات نشطة بعد." : "No active signals yet."}
+            </li>
+          )}
+          {usedSignals.map((s) => (
+            <li
+              key={s.id}
+              className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[var(--line)]/60 pb-2"
             >
-              {ar ? p.ar : p.en}
-            </button>
+              <span>
+                {s.title}
+                {s.drivers[0] ? (
+                  <span className="ms-2 text-xs text-[var(--muted)]">
+                    ({s.drivers.join(", ")})
+                  </span>
+                ) : null}
+              </span>
+              <span
+                className={
+                  s.agreed
+                    ? "text-xs text-[var(--cedar)]"
+                    : "text-xs text-[var(--urgent)]"
+                }
+              >
+                {ar ? s.consent.ar : s.consent.en}
+                {" · "}
+                {s.agreed ? (ar ? "موافق" : "agreed") : ar ? "غير موافق" : "not agreed"}
+              </span>
+            </li>
           ))}
-          <button
-            type="button"
-            onClick={() => {
-              setOverride(null);
-              setOverrideNote("");
-            }}
-            className="rounded-md bg-[var(--cedar)] px-3 py-1.5 text-xs text-[var(--mist)]"
-          >
-            {ar ? "إعادة لمحرك القواعد" : "Reset to rules engine"}
-          </button>
-        </div>
-        {override && (
-          <input
-            value={overrideNote}
-            onChange={(e) => setOverrideNote(e.target.value)}
-            placeholder={ar ? "سبب التجاوز…" : "Override reason…"}
-            className="w-full rounded-md border border-[var(--line)] bg-[var(--sand)]/40 px-3 py-2 text-sm"
-          />
-        )}
+        </ul>
       </section>
-
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => patchVariables({ acuteTesticularPainFlag: true })}
-          className="rounded-md border border-[var(--urgent)] px-3 py-1.5 text-xs text-[var(--urgent)]"
-        >
-          {ar ? "محاكاة ألم خصوي مفاجئ → عاجل" : "Simulate sudden testicular pain → urgent"}
-        </button>
-        <button
-          type="button"
-          onClick={() =>
-            patchVariables({
-              acuteTesticularPainFlag: false,
-              sleepHours: 0,
-              bmi: undefined,
-              semenConcentration: undefined,
-              testosteroneNgDl: undefined,
-              iief5Score: undefined,
-            })
-          }
-          className="rounded-md border border-[var(--line)] px-3 py-1.5 text-xs text-[var(--muted)]"
-        >
-          {ar ? "محاكاة بيانات رقيقة" : "Simulate thin data"}
-        </button>
-      </div>
 
       <CareAccessPanel />
 
-      <section className="rounded-2xl border border-[var(--line)] bg-[var(--sand)]/40 p-5 space-y-3">
+      <section className="rounded-2xl border border-[var(--line)] bg-[var(--mist)] p-5 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-display text-xl text-[var(--cedar)]">
-            {ar ? "مشاركة التنبيه مع الطبيب" : "Doctor alert sharing"}
+            {ar ? "تنبيه الطبيب" : "Doctor alert"}
           </h2>
           <SimulatedBadge ar={ar} />
         </div>
         <p className="text-sm text-[var(--muted)]">
           {ar
-            ? `${assignedDoctor.nameAr} محاكاة. لا تُرسل بيانات صحية للطبيب دون موافقتك في هذه اللحظة.`
-            : `${assignedDoctor.name} is simulated. Health data is not sent to a clinician unless you opt in for this moment.`}
+            ? `${assignedDoctor.nameAr} محاكاة. لا مشاركة دون موافقتك.`
+            : `${assignedDoctor.name} is simulated. Nothing shared without your opt-in.`}
         </p>
         <label className="flex items-center gap-3 text-sm">
           <input
@@ -274,39 +322,17 @@ export default function TriagePage() {
             className="size-4"
           />
           {ar
-            ? "أوافق على تنبيه الطبيب المحاكى إذا هبط المؤشر التوضيحي دون ٦٠"
-            : "I opt in to notify the simulated clinician if illustrative MVI drops below 60"}
+            ? "وافق على تنبيه الطبيب إذا هبط المؤشر التوضيحي دون ٦٠"
+            : "Opt in to notify the doctor if illustrative MVI drops below 60"}
         </label>
       </section>
 
-      <section className="rounded-xl border border-[var(--line)] bg-[var(--mist)] p-4 text-xs text-[var(--muted)] space-y-2">
-        <p>
-          <strong className="text-[var(--cedar)]">
-            {ar ? "حدود سريرية:" : "Clinical boundaries:"}
-          </strong>{" "}
-          {t.boundaryNote}
-        </p>
-        <p>
-          {ar
-            ? "الجاهزية الجينومية: عنصر نائب بموافقة في الخزنة — لا علامات دون موافقة صريحة."
-            : "Genomic readiness: consented placeholder in Vault — no markers without explicit opt-in."}
-        </p>
-      </section>
-
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/analyst"
-          className="inline-flex rounded-md border border-[var(--cedar)] px-4 py-2 text-sm text-[var(--cedar)]"
-        >
-          {ar ? "ملفي" : "My file"}
+      <p className="text-xs text-[var(--muted)]">
+        {t.boundaryNote}{" "}
+        <Link href="/analytics" className="underline text-[var(--cedar)]">
+          {ar ? "أدوات المراجعين" : "Reviewer tools"}
         </Link>
-        <Link
-          href="/vault"
-          className="inline-flex rounded-md bg-[var(--cedar)] px-4 py-2 text-sm text-[var(--mist)]"
-        >
-          {ar ? "الخزنة والموافقات" : "Vault & consents"}
-        </Link>
-      </div>
+      </p>
     </div>
   );
 }

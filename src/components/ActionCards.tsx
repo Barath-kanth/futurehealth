@@ -13,7 +13,7 @@ export function ActionCards() {
       <div className="rounded-2xl border border-[var(--line)] bg-[var(--mist)] p-6 text-sm text-[var(--muted)]">
         {ar
           ? "لا إجراءات معلّقة — استمر بالمراقبة الصامتة."
-          : "No open actions — keep silent monitoring on."}
+          : "No open actions — keep consented watch on."}
       </div>
     );
   }

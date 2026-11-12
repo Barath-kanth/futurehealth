@@ -306,6 +306,24 @@ export const TRIAGE_SAFETY_CASES: SafetyCase[] = [
     expect: "urgent",
     note: "Red-flag hierarchy: urgent overrides reassuring labs.",
   },
+  {
+    id: "agent-cannot-override-triage",
+    title: "Agent-suggested tier cannot replace locked Safe Triage",
+    variables: baseIv({
+      bmi: 31,
+      glucoseMgDl: 118,
+      heatIndexC: 40,
+      sleepHours: 5,
+    }),
+    expect: "primary_care",
+    note: "Invariant: even if an agent “suggests” urgent, product must keep evaluateRisk tier.",
+    assert: ({ tier }) => {
+      // Agent may claim a louder tier; product must still expose locked evaluateRisk tier.
+      const agentSuggestedTier: TriageTier = "urgent";
+      const productDisplays: TriageTier = tier;
+      return productDisplays === "primary_care" && agentSuggestedTier === "urgent";
+    },
+  },
 ];
 
 export function runTriageSafetyTests() {

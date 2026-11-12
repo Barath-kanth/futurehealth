@@ -113,16 +113,16 @@ export const METABOLIC_RANGES = [
 
 export const HOME_FINGERPRICK_STEPS = [
   {
-    en: "Schedule morning draw (7:00–10:00 AM) when testosterone peaks.",
-    ar: "حدّد السحب صباحًا (٧–١٠) عندما يبلغ التستوستيرون ذروته.",
+    en: "Follow the validated kit’s timing (often morning) — demo only.",
+    ar: "اتبع توقيت الطقم المعتمد (غالبًا صباحًا) — للعرض فقط.",
   },
   {
-    en: "Fast 8–12 hours — water only — so metabolic markers stay clean.",
-    ar: "صُم ٨–١٢ ساعة — ماء فقط — لتبقى المؤشرات الاستقلابية نظيفة.",
+    en: "Follow kit fasting rules if listed — demo flow, not medical advice.",
+    ar: "اتبع قواعد الصيام في الطقم إن وُجدت — تدفق عرض وليس نصيحة طبية.",
   },
   {
-    en: "Skip strenuous workouts 24–48h before (hormones/PSA can spike).",
-    ar: "تجنّب التمارين الشاقة ٢٤–٤٨ ساعة قبل الفحص (قد ترتفع الهرمونات/PSA).",
+    en: "Skip strenuous workouts if the kit asks — hormones can vary with hard training.",
+    ar: "تجنّب التمارين الشاقة إن طلب الطقم ذلك — الهرمونات قد تتغير مع التدريب القاسي.",
   },
   {
     en: "Hydrate; warm hands 2 minutes to improve finger circulation.",

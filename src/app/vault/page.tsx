@@ -128,8 +128,8 @@ export default function VaultPage() {
         </div>
         <p className="text-sm text-[var(--muted)]">
           {ar
-            ? `${assignedDoctor.nameAr} محاكاة. لا مشاركة تلقائية لبيانات صحية دون موافقتك.`
-            : `${assignedDoctor.name} is simulated. No automatic health-data share without your approval.`}
+            ? `${assignedDoctor.nameAr} محاكاة. لا مشاركة تلقائية لبيانات صحية أو مواد أو أدوية دون موافقتك. ليس للتأمين أو العمل.`
+            : `${assignedDoctor.name} is simulated. No automatic share of health, substance, or medication flags without your approval. Not for insurance or employment.`}
         </p>
         <label className="flex items-center gap-3 text-sm">
           <input
@@ -227,8 +227,13 @@ export default function VaultPage() {
         <ul className="mt-3 list-disc space-y-2 ps-5 text-[var(--ink)]/80">
           <li>
             {ar
-              ? "لا استخدام ثانوي، لا تأمين، لا توظيف."
-              : "No secondary use, no insurance, no employment."}
+              ? "لا استخدام ثانوي، لا تأمين، لا توظيف — بما في ذلك أعلام المواد والأدوية."
+              : "No secondary use, no insurance, no employment — including substance and medication flags."}
+          </li>
+          <li>
+            {ar
+              ? "أعلام المواد لا تُشارك مع طبيب دون موافقة صريحة (تنبيه الطبيب / المراقبة)."
+              : "Substance flags are never shared with a doctor without explicit opt-in (doctor alert / Quiet watch)."}
           </li>
           <li>
             {ar

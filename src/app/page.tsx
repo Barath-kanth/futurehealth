@@ -16,6 +16,11 @@ export default function HomePage() {
             <h1 className="font-display text-5xl leading-[1.05] text-[var(--cedar)] md:text-7xl">
               SeedShield
             </h1>
+            <p className="mt-3 text-xs text-[var(--muted)]">
+              {ar
+                ? "شخصية العرض: عمر، ٣٤ — بيانات تجريبية مسبقة التحميل"
+                : "Demo persona: Omar, 34 — pre-loaded synthetic data"}
+            </p>
             <p className="mt-5 max-w-lg text-lg text-[var(--ink)]/85">
               {ar
                 ? "يساعدك على فهم إشارات جسمك مبكرًا، ويقترح الخطوة التالية الآمنة. ليس تشخيصًا."
@@ -61,6 +66,11 @@ export default function HomePage() {
               </p>
               <SimulatedBadge ar={ar} />
             </div>
+            <p className="mt-2 text-[11px] text-[var(--mist)]/70">
+              {ar
+                ? "مبني على عرض عمر (٣٤) — ليس إدخالًا فارغًا"
+                : "Based on demo persona Omar (34) — not a blank intake"}
+            </p>
             <div className="mt-4 font-display text-3xl leading-tight">
               {ar ? assessment.triage.labelAr : assessment.triage.label}
             </div>
@@ -76,6 +86,38 @@ export default function HomePage() {
               {ar ? "افتح التفاصيل ←" : "Open details →"}
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-8">
+        <div className="rounded-2xl border border-[var(--cedar)]/30 bg-[var(--mist)] p-5">
+          <h2 className="font-display text-xl text-[var(--cedar)]">
+            {ar ? "ابدأ من هنا: خطوتي → الخزنة → المراجعين" : "Start here: Triage → Vault → Analytics"}
+          </h2>
+          <p className="mt-2 text-sm text-[var(--ink)]">
+            {ar ? (
+              <>
+                <Link href="/triage" className="underline text-[var(--cedar)]">خطوتي</Link>
+                {" → "}
+                <Link href="/vault" className="underline text-[var(--cedar)]">الخزنة</Link>
+                {" → "}
+                <Link href="/analytics" className="underline text-[var(--cedar)]">لوحة المراجعين</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/triage" className="underline text-[var(--cedar)]">Triage</Link>
+                {" → "}
+                <Link href="/vault" className="underline text-[var(--cedar)]">Vault</Link>
+                {" → "}
+                <Link href="/analytics" className="underline text-[var(--cedar)]">Analytics</Link>
+              </>
+            )}
+          </p>
+          <p className="mt-1 text-xs text-[var(--muted)]">
+            {ar
+              ? "ثم المراقبة → الطبيب. النبرة الخليجية في الخصوصية."
+              : "Then Watch → Doctor. Gulf tone picker lives in Privacy."}
+          </p>
         </div>
       </section>
 
