@@ -1,3 +1,4 @@
+import { hasGcpCredentials } from "./adc";
 import type { Locale, RiskAssessment } from "../types";
 
 /**
@@ -28,7 +29,7 @@ export async function explainAssessment(opts: {
   if (
     !opts.forceLocal &&
     project &&
-    process.env.GOOGLE_APPLICATION_CREDENTIALS
+    hasGcpCredentials()
   ) {
     try {
       const { VertexAI } = await import("@google-cloud/vertexai");

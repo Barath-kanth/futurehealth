@@ -1,3 +1,4 @@
+import { hasGcpCredentials } from "../gcp/adc";
 /**
  * Google Search / research retrieval for Radar.
  * Prefers Vertex Gemini + Google Search grounding when credentials exist.
@@ -81,7 +82,7 @@ export async function searchWorldwideResearch(topics: string[]): Promise<{
   const location = process.env.GOOGLE_CLOUD_LOCATION || "us-central1";
   const modelName = process.env.VERTEX_MODEL || "gemini-2.0-flash-001";
 
-  if (project && process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  if (project && hasGcpCredentials()) {
     try {
       const { VertexAI } = await import("@google-cloud/vertexai");
       const vertex = new VertexAI({ project, location });
