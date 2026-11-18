@@ -42,7 +42,7 @@ gcloud run deploy "$SERVICE" \
   --timeout=300 \
   --cpu-boost \
   --no-cpu-throttling \
-  --update-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT,BQ_DATASET=$DATASET,FIRESTORE_COLLECTION=seedshield,AGENT_SCHEDULER_SECRET=$SECRET,AGENT_PERSIST=gcp,VERTEX_MODEL=gemini-2.0-flash-001${OPENWEATHER_API_KEY:+,OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY}" \
+  --update-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT,BQ_DATASET=$DATASET,FIRESTORE_COLLECTION=seedshield,AGENT_SCHEDULER_SECRET=$SECRET,AGENT_PERSIST=gcp,VERTEX_MODEL=gemini-3.8-flash,GOOGLE_CLOUD_LOCATION=global${OPENWEATHER_API_KEY:+,OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY}" \
   --quiet
 
 URL="$(gcloud run services describe "$SERVICE" --region="$REGION" --format='value(status.url)')"

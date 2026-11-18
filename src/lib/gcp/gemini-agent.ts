@@ -1,4 +1,4 @@
-import { hasGcpCredentials } from "./adc";
+import { hasGcpCredentials, vertexInit, vertexModelName } from "./adc";
 import type {
   IndependentVariables,
   Locale,
@@ -51,8 +51,7 @@ export async function runGeminiVitalityAgent(opts: {
 }): Promise<GeminiAgentResult> {
   const locale = opts.locale ?? "en";
   const project = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT;
-  const location = process.env.GOOGLE_CLOUD_LOCATION || "us-central1";
-  const modelName = process.env.VERTEX_MODEL || "gemini-2.0-flash-001";
+  const modelName = vertexModelName();
 
   if (!project || !hasGcpCredentials()) {
     return {
@@ -66,7 +65,7 @@ export async function runGeminiVitalityAgent(opts: {
 
   try {
     const { VertexAI } = await import("@google-cloud/vertexai");
-    const vertex = new VertexAI({ project, location });
+    const vertex = new VertexAI(vertexInit(project));
     const model = vertex.getGenerativeModel({
       model: modelName,
       generationConfig: {
