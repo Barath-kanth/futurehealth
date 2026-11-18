@@ -176,25 +176,34 @@ Acute scrotum (sudden testicular pain goes to urgent care): EAU Guidelines on Pa
 
 ---
 
-## Gemini analytics (verified live on 18 Nov 2026)
+## Gemini (verified live on 18 Nov 2026)
 
-Gemini on Vertex AI is now running in the public deployment: model `gemini-3.8-flash`, global endpoint, Cloud Run service identity (no key file). The old default `gemini-2.0-flash-001` was retired, which is why it was off before.
+Gemini on Vertex AI runs in the public deployment, using the Cloud Run service identity (no key file) and the global endpoint. The old default `gemini-2.0-flash-001` is retired, which is why it was off before.
 
-What I confirmed against the live site:
+Two models, chosen by measured speed: `gemini-3.1-flash-lite` (about 2-5 seconds) for interactive features, and `gemini-3.8-flash` (6 to 45 seconds, varies) for the deep foresight analysis.
 
-| Feature | Result |
-| --- | --- |
-| Gemini foresight (`/api/gemini-agent`) | available, provider `vertex-ai`, model `gemini-3.8-flash` |
-| Explanations (`/api/explain`) | `vertex-ai`, paraphrased from the rule engine's own text |
-| Radar research (Watch cycle) | `vertex-ai+google-search:gemini-3.8-flash`, real Google Search grounding, real source links |
-| Investigate chain text | uses Gemini when its reply passes the safety filter (it drops replies that mention diagnosis, infertility or prescribing), otherwise keeps the rule-based text |
-| Triage tier | unchanged by Gemini: still decided only by the rule engine |
+| Feature | Model | Result on the live site |
+| --- | --- | --- |
+| AI screening guide chat (`/chat`) | 3.1-flash-lite | Gemini writes the answers, in English and Arabic, from the consent-filtered screening file (no raw lab values). A refused injection attempt was confirmed. |
+| Explanations (`/api/explain`) | 3.1-flash-lite | `vertex-ai`, reworded from the rule engine's own text, about 2 seconds |
+| Radar research (Watch cycle) | 3.1-flash-lite | Real Google Search grounding with real source links |
+| Investigate chain text (Watch cycle) | 3.1-flash-lite | Used when the reply passes the safety filter, otherwise the rule-based text stays |
+| Foresight analytics (`/api/gemini-agent`) | 3.8-flash | available, about 24 seconds; shows "unavailable" if Gemini is down (no simulated output) |
+| Triage tier | none | Decided only by the rule engine |
+
+Chat safety design (say this on a slide if you have room):
+1. Fixed rules answer self-harm, sudden testicular pain, medicine changes and "is this a diagnosis" first, instantly, without any model.
+2. Gemini answers everything else from the person's consented screening file only.
+3. An output guard drops any reply that diagnoses, gives a dose or medicine advice, or promises an outcome. Then the rule-based reply is used.
+4. Each reply is labelled "Written by Gemini within fixed safety rules", "Fixed safety reply", or "Rule-based reply".
+
+The chat is now an AI guide and says it is not a clinician. The old "simulated clinician" persona is gone from the chat, nav and cards. Do not call it a doctor chat in the deck.
 
 Wording for the slides (pages 3, 7 and the diagram):
 
-> **Advanced analytics run on Gemini (Vertex AI, `gemini-3.8-flash`):** multi-factor foresight, plain-language explanations, and Google-Search-grounded research for the early-warning agents. Triage itself stays rule-based, and Gemini cannot change the pathway. If Gemini is unavailable, the foresight feature shows "unavailable"; no simulated output is shown.
+> **Gemini on Vertex AI powers the advanced analytics and the screening guide:** multi-factor foresight, plain-language explanations, Google-Search-grounded research for the early-warning agents, and a chat guide that answers within fixed safety rules. Triage itself stays rule-based, and Gemini cannot change the pathway.
 
-Diagram label: "Vertex Gemini: advanced analytics (rules still decide triage)". Drop the word "Optional".
+Diagram label: "Vertex Gemini: analytics, explanations, research, chat (rules still decide triage)". Drop the word "Optional".
 
 Why Gemini is not used to decide triage: a model's output can't be audited by a clinician the way fixed rules can, and the whole safety story ("AI cannot override triage") depends on this. Keep that sentence.
 
