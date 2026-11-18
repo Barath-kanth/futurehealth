@@ -2,9 +2,10 @@
  * Offline checks for live environment helpers and the referral allowlist.
  * Run: npm run test:submission
  */
-import { coarseCoords, heatIndexC, usAqiFromPm25 } from "../src/lib/env-live";
+import { coarseCoords, heatBand, heatIndexC, personalHeatExposure, usAqiFromPm25 } from "../src/lib/env-live";
 import {
   CALENDAR_FILENAME,
+  CLINICIAN_CHECK_LINKS,
   NEUTRAL_DESCRIPTION,
   NEUTRAL_FOLLOW_UP_TITLE,
   NEUTRAL_VISIT_TITLE,
@@ -222,6 +223,36 @@ function fakeAssessment(tier: TriageTier, signals: { id: string; severity: strin
   check("glucose entered without lab consent is ignored", !evaluateRisk(baseIv({ glucoseMgDl: 200 }), consentsOff).signals.some((s) => s.id === "glucose-watch"));
 }
 
+// --- Semen screening cut-offs follow WHO 6th edition (2021): 16 M/mL, 42% total motility, 4% normal forms ---
+{
+  const all = { wearable: true, at_home_device: true, clinical_lab: true, environment: true, self_report: true, family_mode: false };
+  const flagged = (patch: Parameters<typeof baseIv>[0]) =>
+    evaluateRisk(baseIv(patch), all).signals.some((s) => s.id === "semen-parameter-screen");
+  check("semen: concentration 15.9 M/mL is flagged (below 16)", flagged({ semenConcentration: 15.9, motilityPct: 60, morphologyPct: 6 }));
+  check("semen: concentration 16 M/mL is not flagged", !flagged({ semenConcentration: 16, motilityPct: 60, morphologyPct: 6 }));
+  check("semen: total motility 41% is flagged (below 42)", flagged({ semenConcentration: 40, motilityPct: 41, morphologyPct: 6 }));
+  check("semen: total motility 42% is not flagged", !flagged({ semenConcentration: 40, motilityPct: 42, morphologyPct: 6 }));
+  check("semen: normal forms 3% is flagged, 4% is not", flagged({ semenConcentration: 40, motilityPct: 60, morphologyPct: 3 }) && !flagged({ semenConcentration: 40, motilityPct: 60, morphologyPct: 4 }));
+}
+
+// --- Personal heat exposure estimate (NWS heat-index bands) ---
+{
+  check("heat band: 26°C is below caution", heatBand(26) === "below_caution");
+  check("heat band: 28°C is caution (80°F+)", heatBand(28) === "caution");
+  check("heat band: 33°C is extreme caution (90°F+)", heatBand(33) === "extreme_caution");
+  check("heat band: 40°C is danger (103°F+)", heatBand(40) === "danger");
+  check("heat band: 52°C is extreme danger (125°F+)", heatBand(52) === "extreme_danger");
+  const e = personalHeatExposure(38, 2.5);
+  check("38°C heat index with 2.5 h outdoors = 2.5 h in extreme caution", e.band === "extreme_caution" && e.hoursInBand === 2.5);
+  check("below caution counts no exposure hours", personalHeatExposure(22, 4).hoursInBand === 0);
+}
+
+// --- Clinician checks point only to official regulator hosts ---
+{
+  const hosts = Object.values(CLINICIAN_CHECK_LINKS).map((u) => new URL(u));
+  check("clinician-check links are https and on official DHA / DOH hosts", hosts.every((h) => h.protocol === "https:" && /(^|\.)(dha|doh)\.gov\.ae$/.test(h.hostname)), hosts.map((h) => h.hostname).join(","));
+}
+
 // --- Care journey: video link, calendar reminders, clinician summary ---
 {
   const consents = { wearable: true, at_home_device: false, clinical_lab: true, environment: true, self_report: true, family_mode: false };
@@ -283,6 +314,7 @@ function fakeAssessment(tier: TriageTier, signals: { id: string; severity: strin
   check("summary carries the repeat-test question for a single low reading", /repeat early-morning test/.test(s0));
   check("summary has no name, email, phone, or coordinates", !/@|\+?\d{9,}|\blat(itude)?\b|\blon(gitude)?\b|\bname\b:/i.test(s1.replace("No name or contact details are included", "")));
   check("summary says area-level heat is not personal exposure", /area-level, not personal exposure/.test(s0));
+  check("summary adds the estimated personal heat exposure when lifestyle is ticked", /Estimated outdoor heat exposure: .* h per day/.test(s3));
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

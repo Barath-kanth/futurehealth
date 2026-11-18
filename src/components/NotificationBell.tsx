@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Bell } from "lucide-react";
+import { levelWord, timeWord } from "@/lib/ui-words";
 import { useSeedShield } from "@/lib/store";
 import clsx from "clsx";
 import Link from "next/link";
@@ -99,7 +100,7 @@ export function NotificationBell() {
                           "bg-[var(--info-soft)] text-[var(--cedar)]",
                       )}
                     >
-                      {n.level}
+                      {levelWord(n.level, ar)}
                     </span>
                   </div>
                   <div className="mt-1 text-xs font-medium text-[var(--ink)]">
@@ -131,7 +132,7 @@ export function NotificationBell() {
                       {ar ? "افتح" : "Open"}
                     </Link>
                   )}
-                  <span className="text-[10px] text-[var(--muted)]">{n.time}</span>
+                  <span className="text-[10px] text-[var(--muted)]">{timeWord(n.time, ar)}</span>
                 </div>
               </div>
             ))}

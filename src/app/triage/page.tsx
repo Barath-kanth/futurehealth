@@ -6,6 +6,7 @@ import { SelfReportForm } from "@/components/SelfReportForm";
 import { SimulatedBadge } from "@/components/SimulatedBadge";
 import { TriageBadge } from "@/components/SeverityBadge";
 import { Sensitive } from "@/components/Sensitive";
+import { DISCLAIMER_AR, DISCLAIMER_EN } from "@/lib/ui-words";
 import { CONSENT_LABELS, consentForSource } from "@/lib/signal-consent";
 import { useSeedShield } from "@/lib/store";
 import type { TriageTier } from "@/lib/types";
@@ -344,7 +345,7 @@ export default function TriagePage() {
       </section>
 
       <p className="text-xs text-[var(--muted)]">
-        {t.boundaryNote}{" "}
+        {t.boundaryNote === DISCLAIMER_EN && ar ? DISCLAIMER_AR : t.boundaryNote}{" "}
         <Link href="/analytics" className="underline text-[var(--cedar)]">
           {ar ? "أدوات المراجعين" : "Reviewer tools"}
         </Link>

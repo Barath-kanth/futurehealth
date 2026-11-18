@@ -350,10 +350,13 @@ function evaluateRiskUngated(iv: IndependentVariables): RiskAssessment {
   }
 
   // --- Semen parameters (device) ---
+  // WHO Laboratory Manual, 6th ed. (2021) lower reference limits (5th centile of fertile men):
+  // concentration 16 million/mL, total motility 42%, normal forms 4%.
+  // A value below a limit is a screening cue only; it does not separate fertile from subfertile men.
   if (
     iv.semenConcentration !== undefined &&
-    (iv.semenConcentration < 15 ||
-      (iv.motilityPct !== undefined && iv.motilityPct < 40) ||
+    (iv.semenConcentration < 16 ||
+      (iv.motilityPct !== undefined && iv.motilityPct < 42) ||
       (iv.morphologyPct !== undefined && iv.morphologyPct < 4))
   ) {
     pushSignal(signals, {

@@ -140,7 +140,7 @@ export default function RangesPage() {
           <Row
             key={q.id}
             title={ar ? q.nameAr : q.name}
-            meta={`${ar ? "طبيعي" : "Normal"} ${q.normal} · scale ${q.scale}`}
+            meta={`${ar ? "طبيعي" : "Normal"} ${q.normal} · ${ar ? "المقياس" : "scale"} ${q.scale}`}
             note={ar ? q.notesAr : q.notes}
           />
         ))}

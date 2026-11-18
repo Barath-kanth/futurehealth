@@ -1,6 +1,6 @@
 "use client";
 
-import { DEFAULT_COORDS } from "@/lib/env-live";
+import { DEFAULT_COORDS, HEAT_BAND_LABEL, personalHeatExposure } from "@/lib/env-live";
 import { useSeedShield } from "@/lib/store";
 import Link from "next/link";
 import { useState } from "react";
@@ -131,6 +131,18 @@ export function SelfReportForm() {
               </label>
             ))}
           </div>
+
+          {envOn && (
+            <p className="rounded-lg bg-[var(--sand)] px-3 py-2 text-xs text-[var(--ink)]" data-testid="personal-heat">
+              {(() => {
+                const e = personalHeatExposure(variables.heatIndexC, draft.outdoorHeatHours);
+                const label = ar ? HEAT_BAND_LABEL[e.band].ar : HEAT_BAND_LABEL[e.band].en;
+                return ar
+                  ? `تقدير تعرّضك للحرارة: مؤشر الحرارة في منطقتك ${variables.heatIndexC}°م (${label}) × ${draft.outdoorHeatHours} ساعة بالخارج = ${e.hoursInBand} ساعة في هذا النطاق. الظل والأماكن المكيّفة غير محسوبة، والشمس المباشرة تزيد الإحساس حتى نحو ٨°م.`
+                  : `Your estimated heat exposure: area heat index ${variables.heatIndexC}°C (${label}) × ${draft.outdoorHeatHours} h outdoors = ${e.hoursInBand} h in that range. Shade and air-conditioned time are not counted, and direct sun can add up to about 8°C.`;
+              })()}
+            </p>
+          )}
 
           <div className="flex flex-wrap items-center gap-3">
             <button

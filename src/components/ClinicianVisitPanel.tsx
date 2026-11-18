@@ -3,6 +3,7 @@
 import { Sensitive } from "@/components/Sensitive";
 import {
   CALENDAR_FILENAME,
+  CLINICIAN_CHECK_LINKS,
   NEUTRAL_DESCRIPTION,
   NEUTRAL_FOLLOW_UP_TITLE,
   NEUTRAL_VISIT_TITLE,
@@ -151,7 +152,44 @@ export function ClinicianVisitPanel() {
 
       <div className={box}>
         <div className="text-sm font-medium text-[var(--cedar)]">
-          {ar ? "1. غرفة فيديو خاصة" : "1. Private video room"}
+          {ar ? "1. اختر طبيبًا وتحقّق من ترخيصه" : "1. Choose a clinician and check their licence"}
+        </div>
+        <p className="text-[11px] text-[var(--muted)]">
+          {ar
+            ? "لا يتحقق SeedShield من الأطباء. تحقّق بنفسك من الجهة المنظِّمة قبل مشاركة أي شيء. اطلب من الطبيب رقم الترخيص واسم المنشأة وتأكد أن تخصصه يناسب حالتك."
+            : "SeedShield does not verify clinicians. Check with the regulator yourself before sharing anything. Ask for the licence number and facility, and confirm the specialty fits your need."}
+        </p>
+        <ul className="space-y-1 text-xs">
+          <li>
+            {ar ? "دبي: " : "Dubai: "}
+            <a className="underline text-[var(--cedar)]" href={CLINICIAN_CHECK_LINKS.dubaiRegistry} target="_blank" rel="noopener noreferrer">
+              {ar ? "السجل الطبي (هيئة الصحة بدبي)" : "Dubai Medical Registry (DHA)"}
+            </a>
+            {" · "}
+            <a className="underline text-[var(--cedar)]" href={CLINICIAN_CHECK_LINKS.dubaiLicence} target="_blank" rel="noopener noreferrer">
+              {ar ? "تحقق من رقم ترخيص" : "Verify a licence number"}
+            </a>
+          </li>
+          <li>
+            {ar ? "أبوظبي: " : "Abu Dhabi: "}
+            <a className="underline text-[var(--cedar)]" href={CLINICIAN_CHECK_LINKS.abuDhabiTools} target="_blank" rel="noopener noreferrer">
+              {ar ? "ابحث عن طبيب (دائرة الصحة)" : "Find a Medical Professional (DOH)"}
+            </a>
+            {ar
+              ? " — لا يوجد بحث عام لحالة الترخيص، فاطلب رقم الترخيص وشهادة الوضع المهني الحالي."
+              : " — DOH has no public licence-status lookup, so also ask for the licence number and a Current Professional Status Certificate."}
+          </li>
+          <li>
+            {ar
+              ? "إمارات أخرى أو دول أخرى: اطلب رقم الترخيص وتأكد منه لدى الجهة التي أصدرته."
+              : "Elsewhere: ask for the licence number and confirm it with the regulator that issued it."}
+          </li>
+        </ul>
+      </div>
+
+      <div className={box}>
+        <div className="text-sm font-medium text-[var(--cedar)]">
+          {ar ? "2. غرفة فيديو خاصة" : "2. Private video room"}
         </div>
         <p className="text-[11px] text-[var(--muted)]">
           {ar
@@ -188,7 +226,7 @@ export function ClinicianVisitPanel() {
 
       <div className={box}>
         <div className="text-sm font-medium text-[var(--cedar)]">
-          {ar ? "2. الموعد والتذكيرات في تقويمك" : "2. Visit and reminders in your calendar"}
+          {ar ? "3. الموعد والتذكيرات في تقويمك" : "3. Visit and reminders in your calendar"}
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-xs text-[var(--ink)]">
@@ -227,7 +265,7 @@ export function ClinicianVisitPanel() {
 
       <div className={box}>
         <div className="text-sm font-medium text-[var(--cedar)]">
-          {ar ? "3. ملخص لطبيبك" : "3. Summary for your clinician"}
+          {ar ? "4. ملخص لطبيبك" : "4. Summary for your clinician"}
         </div>
         <p className="text-[11px] text-[var(--muted)]">
           {ar

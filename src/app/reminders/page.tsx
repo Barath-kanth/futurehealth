@@ -1,5 +1,6 @@
 "use client";
 
+import { levelWord, timeWord } from "@/lib/ui-words";
 import { useSeedShield } from "@/lib/store";
 import clsx from "clsx";
 import Link from "next/link";
@@ -89,7 +90,7 @@ export default function RemindersPage() {
               >
                 {n.level}
               </span>
-              <span className="text-[10px] text-[var(--muted)]">{n.time}</span>
+              <span className="text-[10px] text-[var(--muted)]">{timeWord(n.time, ar)}</span>
             </div>
             <h3 className="mt-2 font-display text-lg text-[var(--cedar)]">
               {ar ? n.titleAr : n.title}

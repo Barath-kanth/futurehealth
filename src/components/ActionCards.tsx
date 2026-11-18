@@ -1,5 +1,6 @@
 "use client";
 
+import { effortWord, impactWord } from "@/lib/ui-words";
 import { useSeedShield } from "@/lib/store";
 import clsx from "clsx";
 import Link from "next/link";
@@ -37,9 +38,9 @@ export function ActionCards() {
             <div className="flex flex-wrap gap-1">
               <Chip>{a.dueLabel && (ar ? a.dueLabelAr : a.dueLabel)}</Chip>
               <Chip tone={a.impact === "high" ? "hot" : "cool"}>
-                {a.impact} impact
+                {impactWord(a.impact, ar)}
               </Chip>
-              <Chip>{a.effort}</Chip>
+              <Chip>{effortWord(a.effort, ar)}</Chip>
             </div>
           </div>
           <ol className="mt-3 list-decimal space-y-1 ps-5 text-sm text-[var(--ink)]/85">

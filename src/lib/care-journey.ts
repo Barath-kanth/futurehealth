@@ -1,4 +1,5 @@
 import { applyConsents } from "./consent-filter";
+import { HEAT_BAND_LABEL, personalHeatExposure } from "./env-live";
 import type { ConsentCategory, IndependentVariables, RiskAssessment } from "./types";
 
 /**
@@ -6,6 +7,15 @@ import type { ConsentCategory, IndependentVariables, RiskAssessment } from "./ty
  * the person gets a video link, a calendar file with reminders, and a summary
  * they can hand to a clinician they choose.
  */
+
+// ---------- Checking a clinician ----------
+
+/** Official regulator pages. SeedShield does not verify clinicians; the person does. */
+export const CLINICIAN_CHECK_LINKS = {
+  dubaiRegistry: "https://services.dha.gov.ae/sheryan/wps/portal/home/medical-directory/",
+  dubaiLicence: "https://www.dha.gov.ae/sheryan/wps/portal/home/services-professional/professional-registrationstatus",
+  abuDhabiTools: "https://www.doh.gov.ae/en/resources/Lists-and-Tools",
+} as const;
 
 // ---------- Video room ----------
 
@@ -237,6 +247,12 @@ export function buildClinicianSummary(args: {
       `- Sitting: ${iv.sedentaryHours} h per day`,
       `- Work stress (0-100): ${iv.occupationalStress}`,
     );
+    if (consents.environment) {
+      const e = personalHeatExposure(iv.heatIndexC, iv.outdoorHeatHours);
+      lines.push(
+        `- Estimated outdoor heat exposure: ${e.hoursInBand} h per day in the "${HEAT_BAND_LABEL[e.band].en}" range (area heat index applied to self-reported outdoor hours; shade and indoor time not counted).`,
+      );
+    }
   }
 
   if (consents.environment) {

@@ -74,3 +74,40 @@ export function coarseCoords(
 
 /** Default demo location: Abu Dhabi. */
 export const DEFAULT_COORDS = { lat: 24.45, lon: 54.38 } as const;
+
+// ---------- Personal heat exposure estimate ----------
+
+/**
+ * US National Weather Service heat-index categories (converted from °F):
+ * Caution 80–90°F, Extreme Caution 90–103°F, Danger 103–124°F, Extreme Danger 125°F+.
+ * The NWS values assume shade; direct sun can add up to about 15°F (8°C).
+ */
+export type HeatBand = "below_caution" | "caution" | "extreme_caution" | "danger" | "extreme_danger";
+
+export function heatBand(heatIndexC: number): HeatBand {
+  if (heatIndexC >= 51.7) return "extreme_danger";
+  if (heatIndexC >= 39.4) return "danger";
+  if (heatIndexC >= 32.2) return "extreme_caution";
+  if (heatIndexC >= 26.7) return "caution";
+  return "below_caution";
+}
+
+export const HEAT_BAND_LABEL: Record<HeatBand, { en: string; ar: string }> = {
+  below_caution: { en: "below the caution range", ar: "دون نطاق الحذر" },
+  caution: { en: "Caution", ar: "حذر" },
+  extreme_caution: { en: "Extreme caution", ar: "حذر شديد" },
+  danger: { en: "Danger", ar: "خطر" },
+  extreme_danger: { en: "Extreme danger", ar: "خطر شديد" },
+};
+
+/**
+ * Rough personal estimate: the area heat index applied to the hours the person
+ * says they spend outdoors. Indoor, shaded, and air-conditioned time is not counted.
+ */
+export function personalHeatExposure(heatIndexC: number, outdoorHours: number) {
+  const band = heatBand(heatIndexC);
+  return {
+    band,
+    hoursInBand: band === "below_caution" ? 0 : Math.max(0, outdoorHours),
+  };
+}

@@ -86,3 +86,14 @@ Third-party data and services: OpenWeatherMap API (free tier, used under its ter
 - A connected referral network, verified specialists, or a partner teleconsult service (video links and summaries are self-arranged by the user; the clinic queue is a labelled demo).
 - That the heat reading is the person's own exposure (it is area-level; their own hours outdoors and shift work are self-entered).
 - That Arabic copy is clinically reviewed (it needs native-speaker and clinician review; Arabic and English only).
+
+## Added in the final pass
+
+| Where | Add or change |
+| --- | --- |
+| Inputs / lifestyle slide | "Heat is live for the person's area; we estimate personal exposure from the outdoor hours they enter, using the US National Weather Service heat-index bands." Do not say "measured exposure". |
+| Referral slide | "Care access today: check a clinician's licence with the regulator, private video link, calendar file with reminders, a summary the person approves and shares. Verified specialist routing is the next step, pending partnerships." |
+| Safety / evidence slide | "Semen cut-offs follow the WHO 6th edition (2021): 16 million/mL, 42% total motility, 4% normal forms." |
+| Evidence slide | "91 automated checks plus 23 triage safety cases; rules also run on 1,726 NHANES men. This checks rule behaviour, not clinical accuracy." |
+| Next steps slide | Clinician sign-off (`docs/CLINICIAN_SIGNOFF_SHEET.md`), native Arabic review, volunteer usability check (`docs/PILOT_PLAN.md`), partner referral (`docs/REFERRAL_INTEGRATION.md`). |
+| Do not claim | clinical validation, partner clinics, verified specialists, pilot results, native-reviewed Arabic. |

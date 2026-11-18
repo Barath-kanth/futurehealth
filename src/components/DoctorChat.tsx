@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useSeedShield } from "@/lib/store";
 import clsx from "clsx";
+import { CHAT_GREETING_PREFIX, chatGreetingAr } from "@/lib/ui-words";
+import { ASSIGNED_DOCTOR } from "@/lib/me-profile";
 
 const QUICK = [
   { en: "Is this about fertility diagnosis?", ar: "هل هذا تشخيص خصوبة؟" },
@@ -52,7 +54,9 @@ export function DoctorChat() {
                 : "bg-[var(--sand)] text-[var(--ink)]",
             )}
           >
-            {m.text}
+            {ar && m.text.startsWith(CHAT_GREETING_PREFIX)
+              ? chatGreetingAr(ASSIGNED_DOCTOR.nameAr)
+              : m.text}
           </div>
         ))}
         <div ref={bottom} />

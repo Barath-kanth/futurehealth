@@ -7,6 +7,7 @@ import {
   LIFESTYLE_SUBSTANCE_NOTES,
 } from "@/lib/clinical-ranges";
 import { PAIRABLE_DEVICES } from "@/lib/me-profile";
+import { freshnessWord, reliabilityWord } from "@/lib/ui-words";
 import { useSeedShield } from "@/lib/store";
 import clsx from "clsx";
 import Link from "next/link";
@@ -104,8 +105,8 @@ export default function DevicesPage() {
                           {d.productExample}
                         </p>
                         <p className="mt-1 text-[10px] uppercase tracking-wide text-[var(--muted)]">
-                          {d.reliability} reliability
-                          {stream ? ` · ${stream.freshness}` : ""}
+                          {reliabilityWord(d.reliability, ar)}
+                          {stream ? ` · ${freshnessWord(stream.freshness, ar)}` : ""}
                         </p>
                       </div>
                       <button
