@@ -1,12 +1,11 @@
 "use client";
 
 import { DoctorChat } from "@/components/DoctorChat";
-import { SimulatedBadge } from "@/components/SimulatedBadge";
 import { useSeedShield } from "@/lib/store";
 import Link from "next/link";
 
 export default function ChatPage() {
-  const { locale, assignedDoctor, doctorAlertOptIn } = useSeedShield();
+  const { locale, doctorAlertOptIn } = useSeedShield();
   const ar = locale === "ar";
 
   return (
@@ -14,14 +13,13 @@ export default function ChatPage() {
       <header>
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="font-display text-4xl text-[var(--cedar)]">
-            {ar ? "محادثة الطبيب" : "Doctor chat"}
+            {ar ? "مرشد الفحص الذكي" : "AI screening guide"}
           </h1>
-          <SimulatedBadge ar={ar} />
         </div>
         <p className="mt-2 text-sm text-[var(--muted)]">
           {ar
-            ? `${assignedDoctor.nameAr} شخصية عرض — ليست طبيبة حقيقية. لا نصيحة ببدء/إيقاف دواء. الفرز الآمن هو المرجع.`
-            : `${assignedDoctor.name} is a demo persona — not a real clinician. No start/stop medication advice. Safe Triage is the source of truth.`}
+            ? "مرشد ذكي يعمل بـ Gemini ضمن قواعد أمان ثابتة — ليس طبيبًا. لا نصيحة ببدء/إيقاف دواء. الفرز الآمن هو المرجع، وأسئلة الأمان تُجاب بقواعد ثابتة قبل أي نموذج."
+            : "An AI guide powered by Gemini inside fixed safety rules. It is not a clinician. No start/stop medication advice. Safe Triage is the source of truth, and safety questions are answered by fixed rules before any model sees them."}
         </p>
         <p className="mt-1 text-xs text-[var(--muted)]">
           {doctorAlertOptIn

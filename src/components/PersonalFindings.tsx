@@ -134,7 +134,7 @@ function FindingCard({
           → {ar ? f.nextStepAr : f.nextStep}
         </span>
         <Link href="/chat" className="text-xs font-medium text-[var(--brass-deep)] underline">
-          {ar ? "اسأل الطبيب" : "Ask doctor"}
+          {ar ? "اسأل المرشد الذكي" : "Ask the AI guide"}
         </Link>
       </div>
     </article>

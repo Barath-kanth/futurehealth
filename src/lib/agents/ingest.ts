@@ -91,7 +91,7 @@ export function runIngestAgent(
         `businessStress=${iv.businessStress}`,
       ],
       sources: [{ label: "Life context stream", kind: "social" }],
-      relatedProducts: ["Do now", "Doctor chat"],
+      relatedProducts: ["Do now", "AI guide"],
       at: new Date().toISOString(),
       simulated: false,
     });

@@ -36,7 +36,7 @@ export default function BodyPage() {
           {ar ? "افتح خطة العمل" : "Open action plan"}
         </Link>
         <Link href="/chat" className="rounded-md border border-[var(--cedar)] px-4 py-2 text-sm text-[var(--cedar)]">
-          {ar ? "اسأل الطبيب عن منطقة" : "Ask doctor about a region"}
+          {ar ? "اسأل المرشد الذكي عن منطقة" : "Ask the AI guide about a region"}
         </Link>
       </div>
     </div>

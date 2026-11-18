@@ -860,8 +860,8 @@ export function buildNotifications(
 
   notes.push({
     id: "n-doc",
-    title: "Doctor chat available",
-    titleAr: "محادثة الطبيب متاحة",
+    title: "AI guide available",
+    titleAr: "المرشد الذكي متاح",
     body: "Ask about workplace impact or what your body map means — screening guidance only.",
     bodyAr: "اسأل عن أثر العمل أو معنى خريطة جسمك — إرشاد فحص فقط.",
     level: "info" as const,

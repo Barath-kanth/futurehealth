@@ -44,9 +44,9 @@ export function runCareAgent(opts: {
     titleAr: "جسر الطبيب جاهز",
     summary:
       locale === "ar"
-        ? "يمكن فتح محادثة الطبيب أو طلب استشارة. الطبيب في العرض محاكى."
-        : "Doctor chat or consult booking is available. Demo clinician is simulated.",
-    summaryAr: "محادثة طبيب أو حجز استشارة متاحة. الطبيب محاكى في العرض.",
+        ? "يمكن فتح المرشد الذكي أو ترتيب استشارة بنفسك. قائمة العيادة في التطبيق عرض فقط."
+        : "The AI guide or a self-arranged consult is available. The in-app clinic list is a demo.",
+    summaryAr: "المرشد الذكي أو استشارة ترتبها بنفسك متاحان. قائمة العيادة في التطبيق عرض فقط.",
     severity: opts.triageTier === "urgent" ? "urgent" : "watch",
     evidence: [`triage=${opts.triageTier}`],
     sources: [{ label: "Care connect", kind: "rule" }],

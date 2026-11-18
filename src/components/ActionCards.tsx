@@ -60,7 +60,7 @@ export function ActionCards() {
               href="/chat"
               className="rounded-md border border-[var(--cedar)] px-3 py-2 text-xs font-medium text-[var(--cedar)]"
             >
-              {ar ? "اسأل الطبيب" : "Ask doctor"}
+              {ar ? "اسأل المرشد الذكي" : "Ask the AI guide"}
             </Link>
           </div>
         </article>

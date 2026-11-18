@@ -15,7 +15,7 @@ const NAV = [
   { href: "/analyst", label: "My health", labelAr: "صحتي" },
   { href: "/devices", label: "Devices", labelAr: "أجهزتي" },
   { href: "/actions", label: "Do now", labelAr: "افعل الآن" },
-  { href: "/chat", label: "Doctor", labelAr: "الطبيب" },
+  { href: "/chat", label: "AI guide", labelAr: "المرشد" },
   { href: "/vault", label: "Privacy", labelAr: "خصوصيتي" },
   { href: "/agents", label: "Watch", labelAr: "المراقبة" },
 ];

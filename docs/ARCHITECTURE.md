@@ -97,7 +97,7 @@ Age gate (18+) → Consent vault → Consented signals
 
 - Screening ≠ diagnosis; no medication start/stop advice.  
 - Agents **cannot** change locked triage tier (safety test included).  
-- Doctor chat: safe replies for diagnosis Q, meds Q, sudden pain → urgent, self-harm → crisis redirect.  
+- AI screening guide (Gemini): fixed rules answer diagnosis Q, meds Q, sudden pain → urgent and self-harm → crisis redirect before any model runs; Gemini answers everything else from the consent-filtered screening file; an output guard drops diagnosis, dose and outcome claims and falls back to rules.  
 - `npm run test:triage` → 23/23.  
 - `/boundaries` = what we don’t do.
 

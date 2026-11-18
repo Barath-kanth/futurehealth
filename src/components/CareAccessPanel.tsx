@@ -158,7 +158,7 @@ export function CareAccessPanel() {
               className="rounded-xl border border-[var(--line)] px-3 py-3 text-start text-sm hover:border-[var(--cedar)]"
             >
               <div className="font-medium text-[var(--cedar)]">{ar ? "محادثة نصية" : "Text-only chat"}</div>
-              <div className="mt-1 text-[10px] text-[var(--muted)]">{ar ? "طبيب محاكى" : "Simulated clinician"}</div>
+              <div className="mt-1 text-[10px] text-[var(--muted)]">{ar ? "مرشد ذكي وليس طبيبًا" : "AI guide, not a clinician"}</div>
             </Link>
           </div>
 

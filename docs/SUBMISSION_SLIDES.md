@@ -72,7 +72,7 @@ Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Fires
 | Risk | Safeguard |
 | --- | --- |
 | Misdiagnosis | Rules-only triage; “screening ≠ diagnosis”; `/boundaries` |
-| Medication harm | Doctor chat refuses start/stop advice |
+| Medication harm | The AI guide refuses start/stop advice (fixed rule, runs before Gemini) |
 | Consent bypass | `applyConsents()` before triage; tests for ignored flags |
 | Agent overreach | Agents cannot change locked triage |
 | Privacy / insurance | Vault: no insurance/employment; substance flags opt-in only |
