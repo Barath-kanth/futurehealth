@@ -198,7 +198,7 @@ async function enrichWithGemini(
   const vertex = new VertexAI(vertexInit(project));
   const model = vertex.getGenerativeModel({
     model: modelName,
-    generationConfig: { temperature: 0.3, maxOutputTokens: 512 },
+    generationConfig: { temperature: 0.3, maxOutputTokens: 4096 },
   });
 
   const prompt = `You are SeedShield Investigate agent (Amri-style early warning for male reproductive HEALTH SCREENING).

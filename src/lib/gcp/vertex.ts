@@ -35,7 +35,7 @@ export async function explainAssessment(opts: {
       const vertex = new VertexAI(vertexInit(project));
       const model = vertex.getGenerativeModel({
         model: modelName,
-        generationConfig: { temperature: 0.2, maxOutputTokens: 512 },
+        generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
       });
 
       const prompt = buildRewordPrompt(canonical, locale);

@@ -29,3 +29,6 @@ export function vertexInit(project: string): {
     ? { project, location, apiEndpoint: "aiplatform.googleapis.com" }
     : { project, location };
 }
+
+// Note: Gemini 3.x spends output tokens on internal thinking, and those count against
+// maxOutputTokens. Keep the caps in the Gemini call sites generous (4096+) or JSON replies get cut off.

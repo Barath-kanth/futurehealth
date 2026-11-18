@@ -88,7 +88,7 @@ export async function searchWorldwideResearch(topics: string[]): Promise<{
       const model = vertex.getGenerativeModel({
         model: modelName,
         tools: [{ googleSearch: {} } as never],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
+        generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
       });
 
       const query = topics.slice(0, 3).join("; ");

@@ -70,7 +70,7 @@ export async function runGeminiVitalityAgent(opts: {
       model: modelName,
       generationConfig: {
         temperature: 0.35,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 8192,
         responseMimeType: "application/json",
       },
     });
