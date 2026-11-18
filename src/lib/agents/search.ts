@@ -1,4 +1,4 @@
-import { hasGcpCredentials, vertexInit, vertexModelName } from "../gcp/adc";
+import { hasGcpCredentials, vertexInit, vertexFastModelName } from "../gcp/adc";
 /**
  * Google Search / research retrieval for Radar.
  * Prefers Vertex Gemini + Google Search grounding when credentials exist.
@@ -79,7 +79,7 @@ export async function searchWorldwideResearch(topics: string[]): Promise<{
   searchUsed: boolean;
 }> {
   const project = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT;
-  const modelName = vertexModelName();
+  const modelName = vertexFastModelName();
 
   if (project && hasGcpCredentials()) {
     try {

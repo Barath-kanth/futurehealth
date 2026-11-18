@@ -82,7 +82,7 @@ export default function WatchPage() {
   const runWatchCycle = useEffectEvent(async (reason: "auto" | "refresh") => {
     setRefreshing(true);
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
+    const timer = setTimeout(() => controller.abort(), 30000);
     try {
       const res = await fetch("/api/agents/cycle", {
         method: "POST",

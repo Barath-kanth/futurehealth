@@ -1,4 +1,4 @@
-import { hasGcpCredentials, vertexInit, vertexModelName } from "./adc";
+import { hasGcpCredentials, vertexInit, vertexFastModelName } from "./adc";
 import type { Locale, RiskAssessment } from "../types";
 
 /**
@@ -23,7 +23,7 @@ export async function explainAssessment(opts: {
   const locale = opts.locale ?? "en";
   const canonical = localExplain(opts.assessment, opts.personaName, locale);
   const project = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT;
-  const modelName = vertexModelName();
+  const modelName = vertexFastModelName();
 
   if (
     !opts.forceLocal &&

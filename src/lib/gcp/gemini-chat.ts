@@ -1,6 +1,6 @@
 import type { IndependentVariables, Locale, RiskAssessment } from "../types";
 import { isSafeChatReply } from "../chat-guard";
-import { hasGcpCredentials, vertexInit, vertexModelName } from "./adc";
+import { hasGcpCredentials, vertexInit, vertexFastModelName } from "./adc";
 
 export type ChatTurn = { role: "user" | "guide"; text: string };
 
@@ -21,7 +21,7 @@ export async function chatWithGemini(opts: {
   if (!project || !hasGcpCredentials()) return null;
 
   const ar = opts.locale === "ar";
-  const modelName = vertexModelName();
+  const modelName = vertexFastModelName();
   const a = opts.assessment;
 
   const file = {

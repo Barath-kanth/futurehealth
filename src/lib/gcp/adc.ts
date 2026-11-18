@@ -13,9 +13,19 @@ export function hasGcpCredentials(): boolean {
  */
 export const DEFAULT_VERTEX_MODEL = "gemini-3.8-flash";
 export const DEFAULT_VERTEX_LOCATION = "global";
+/**
+ * Interactive features (chat, explanations, agent text, grounded research) use a fast model:
+ * gemini-3.1-flash-lite answers in about 2-5 seconds, while gemini-3.8-flash varies from 6 to 45
+ * seconds. The deeper foresight analysis keeps the stronger model.
+ */
+export const DEFAULT_VERTEX_FAST_MODEL = "gemini-3.1-flash-lite";
 
 export function vertexModelName(): string {
   return process.env.VERTEX_MODEL || DEFAULT_VERTEX_MODEL;
+}
+
+export function vertexFastModelName(): string {
+  return process.env.VERTEX_FAST_MODEL || DEFAULT_VERTEX_FAST_MODEL;
 }
 
 /** Options for `new VertexAI(...)`. The global location needs an explicit endpoint. */

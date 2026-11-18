@@ -1,4 +1,4 @@
-import { vertexInit, vertexModelName } from "../gcp/adc";
+import { vertexInit, vertexFastModelName } from "../gcp/adc";
 import type { RiskAssessment } from "../types";
 import type { AgentAlert, AgentFinding, SetupConfig } from "./types";
 
@@ -192,7 +192,7 @@ async function enrichWithGemini(
   },
   base: AgentFinding,
 ): Promise<AgentFinding | null> {
-  const modelName = vertexModelName();
+  const modelName = vertexFastModelName();
   const project = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT!;
   const { VertexAI } = await import("@google-cloud/vertexai");
   const vertex = new VertexAI(vertexInit(project));
