@@ -19,13 +19,13 @@ export function JobTypePicker() {
 
   useEffect(() => {
     sync();
-  }, [variables, sync]);
+  }, [variables]);
 
   useEffect(() => {
     if (!watchLive) return;
     const id = setInterval(() => sync(), 4000);
     return () => clearInterval(id);
-  }, [watchLive, sync]);
+  }, [watchLive]);
 
   return (
     <div className="space-y-3">

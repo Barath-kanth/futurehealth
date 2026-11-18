@@ -164,9 +164,12 @@ export default function WatchPage() {
     }
   });
 
+  // Run once on mount. A useEffectEvent function changes identity on every
+  // render, so it must NOT be in the dependency list (doing so caused an
+  // endless fetch loop: cycle → setState → render → effect → cycle).
   useEffect(() => {
     void runWatchCycle("auto");
-  }, [runWatchCycle]);
+  }, []);
 
   const alert = cycle?.investigate.alerts[0];
   const booking = allowBook ? cycle?.care.booking : null;

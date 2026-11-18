@@ -6,7 +6,30 @@ import type { ConsentCategory, IndependentVariables, Locale } from "@/lib/types"
  * Local / Next entrypoint. In production, Cloud Scheduler hits Cloud Run
  * which uses the same orchestrator. Optional: proxy to AGENT_PLATFORM_URL.
  */
+const WINDOW_MS = 60_000;
+const MAX_PER_WINDOW = 12;
+const hits = new Map<string, number[]>();
+
+/** Per-client cap so a stuck browser tab cannot flood Gemini, Firestore or BigQuery. */
+function tooMany(req: Request): boolean {
+  const ip = (req.headers.get("x-forwarded-for") || "unknown").split(",")[0]!.trim();
+  const now = Date.now();
+  const recent = (hits.get(ip) || []).filter((t) => now - t < WINDOW_MS);
+  recent.push(now);
+  hits.set(ip, recent);
+  if (hits.size > 2000) {
+    for (const [k, v] of hits) if (!v.some((t) => now - t < WINDOW_MS)) hits.delete(k);
+  }
+  return recent.length > MAX_PER_WINDOW;
+}
+
 export async function POST(req: Request) {
+  if (tooMany(req)) {
+    return NextResponse.json(
+      { error: "too many watch cycles — try again in a minute" },
+      { status: 429, headers: { "Retry-After": "60" } },
+    );
+  }
   try {
     const body = (await req.json()) as {
       variables: IndependentVariables;
