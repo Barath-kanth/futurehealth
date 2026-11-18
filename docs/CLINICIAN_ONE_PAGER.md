@@ -10,7 +10,7 @@
 | Not enough information | Sparse clinical anchors; no clinical-domain elevated cues |
 | Self-care | Enough data; lifestyle/environment only |
 | Primary care | Metabolic / infectious / multi clinical elevated cues |
-| Andrology / Urology | Semen, hormone, or anatomical screening cues → **human review** |
+| Andrology / Urology | Semen or anatomical screening cues, or a confirmed low testosterone (two readings below 300 ng/dL) → **human review**. A single low reading goes to primary care with a repeat early-morning test. |
 | Fertility services | Multiple reproductive cues → **clinician-gated only** |
 | Urgent | Sudden testicular pain **or** infectious + systemic feverish cue |
 

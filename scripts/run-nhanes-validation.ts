@@ -34,6 +34,8 @@ type Row = {
   waist?: number;
   glucose?: number;
   testosterone?: number;
+  /** Not in NHANES. Only set for the clearly labelled simulated repeat-test pathway check. */
+  testosteroneRepeat?: number;
   sleep?: number;
 };
 
@@ -85,6 +87,7 @@ function evaluate(row: Row): Evaluated {
     visceralFatScore: undefined,
     glucoseMgDl: row.glucose,
     testosteroneNgDl: row.testosterone,
+    testosteroneRepeatNgDl: row.testosteroneRepeat,
     ...(row.sleep !== undefined ? { sleepHours: row.sleep } : {}),
   });
   const a = evaluateRisk(iv, ALL_ON);
@@ -135,7 +138,7 @@ const bmiC = concordance(withBmi, (e) => e.signalIds.includes("metabolic-bmi"), 
 const gluWho = concordance(withGlu, (e) => e.signalIds.includes("glucose-watch"), (e) => (e.row.glucose as number) >= 110);
 const gluAda = concordance(withGlu, (e) => e.signalIds.includes("glucose-watch"), (e) => (e.row.glucose as number) >= 100);
 const gluDm = concordance(withGlu, (e) => e.signalIds.includes("glucose-watch"), (e) => (e.row.glucose as number) >= 126);
-const tC = concordance(withT, (e) => e.signalIds.includes("hormone-screen"), (e) => (e.row.testosterone as number) < 300);
+const tC = concordance(withT, (e) => e.signalIds.includes("hormone-repeat"), (e) => (e.row.testosterone as number) < 300);
 
 // --- Safety / consistency invariants on real people ---
 const counts: Record<TriageTier, number> = {
@@ -152,7 +155,9 @@ const metabolicHigh = ev.filter(
   (e) => (e.row.bmi !== undefined && e.row.bmi >= 30) || (e.row.glucose !== undefined && e.row.glucose >= 110),
 );
 const lowT = ev.filter((e) => e.row.testosterone !== undefined && e.row.testosterone < 300);
-const specialty = ev.filter((e) => e.tier === "andrology_urology" || e.tier === "fertility_services");
+const lowTConfirmed = lowT.map((e) => evaluate({ ...e.row, testosteroneRepeat: e.row.testosterone }));
+const lowTRecovered = lowT.map((e) => evaluate({ ...e.row, testosteroneRepeat: 450 }));
+const specialty = [...ev, ...lowTConfirmed].filter((e) => e.tier === "andrology_urology" || e.tier === "fertility_services");
 
 const invariants: { name: string; violations: number; of: number }[] = [
   { name: "No urgent tier without a red flag (NHANES has no pain/red-flag field)", violations: counts.urgent, of: ev.length },
@@ -163,12 +168,27 @@ const invariants: { name: string; violations: number; of: number }[] = [
     of: metabolicHigh.length,
   },
   {
-    name: "Total testosterone < 300 ng/dL always reaches the specialist-review gate",
-    violations: lowT.filter((e) => rank(e.tier) < rank("andrology_urology")).length,
+    name: "A single total testosterone < 300 ng/dL is never routed to self-care or 'need more information'",
+    violations: lowT.filter((e) => rank(e.tier) < rank("primary_care")).length,
     of: lowT.length,
   },
   {
-    name: "Every specialty-tier result requires human review",
+    name: "A single total testosterone < 300 ng/dL never opens the specialist gate on its own (no other cue in NHANES)",
+    violations: lowT.filter((e) => rank(e.tier) >= rank("andrology_urology")).length,
+    of: lowT.length,
+  },
+  {
+    name: "Pathway check (simulated repeat = first value): a confirmed low testosterone always reaches the specialist gate",
+    violations: lowTConfirmed.filter((e) => rank(e.tier) < rank("andrology_urology")).length,
+    of: lowTConfirmed.length,
+  },
+  {
+    name: "Pathway check (simulated normal repeat of 450 ng/dL): an unconfirmed low value raises no hormone cue",
+    violations: lowTRecovered.filter((e) => e.signalIds.includes("hormone-screen") || e.signalIds.includes("hormone-repeat")).length,
+    of: lowTRecovered.length,
+  },
+  {
+    name: "Every specialty-tier result requires human review (real results plus the simulated confirmed-repeat pathway)",
     violations: specialty.filter((e) => !e.humanReview).length,
     of: specialty.length,
   },
@@ -190,7 +210,9 @@ const ltTbl = (rowsIn: Evaluated[]) =>
   TIER_ORDER.map((t) => `${rowsIn.filter((e) => e.tier === t).length}`).join(" | ");
 
 const lowTPrev = pct(lowT.length, withT.length);
-const lowTSpecialty = lowT.filter((e) => e.tier === "andrology_urology").length;
+const lowTSpecialty = lowT.filter((e) => e.tier === "andrology_urology" || e.tier === "fertility_services").length;
+const lowTPrimary = lowT.filter((e) => e.tier === "primary_care").length;
+const lowTOtherTier = lowT.length - lowTSpecialty - lowTPrimary;
 const specialtyShare = pct(counts.andrology_urology, ev.length);
 
 const failedInvariants = invariants.filter((i) => i.violations > 0);
@@ -219,9 +241,9 @@ ${concRow("BMI ≥ 30 vs metabolic-bmi flag", bmiC)}
 ${concRow("Glucose ≥ 110 (WHO) vs glucose flag", gluWho)}
 ${concRow("Glucose ≥ 100 (ADA) vs glucose flag", gluAda)}
 ${concRow("Glucose ≥ 126 (diabetes range) vs glucose flag", gluDm)}
-${concRow("Testosterone < 300 vs hormone flag", tC)}
+${concRow("Testosterone < 300 vs 'repeat advised' flag (first reading)", tC)}
 
-How to read this: the BMI and testosterone flags use the same thresholds as their reference, so agreement near 100% confirms correct units, edge cases, and missing-value handling on real data. It does **not** show clinical accuracy. The glucose flag fires at ≥ 110 (WHO), so it deliberately misses the ADA 100–109 band; the ADA row quantifies that choice.
+How to read this: the BMI and first-reading testosterone flags use the same thresholds as their reference, so agreement near 100% confirms correct units, edge cases, and missing-value handling on real data. It does **not** show clinical accuracy. The glucose flag fires at ≥ 110 (WHO), so it deliberately misses the ADA 100–109 band; the ADA row quantifies that choice.
 
 ## 2. Safety and consistency invariants
 
@@ -250,8 +272,8 @@ ${bands
 
 ## 4. Findings to act on
 
-- **A single low testosterone value routes straight to the specialist-review gate.** ${lowT.length} of ${withT.length} men with a measured value (${lowTPrev}) are below 300 ng/dL, and ${lowTSpecialty} of ${ev.length} men overall (${specialtyShare}) land in the andrology/urology pathway from that one value. The AUA testosterone-deficiency guideline (2018) advises confirming a low total testosterone with a second early-morning measurement before acting, and NHANES blood draws happen in morning, afternoon, and evening sessions, so some low values here may be timing effects. Among the ${withBmi.filter((e) => (e.row.bmi as number) >= 30).length} men with BMI ≥ 30, ${withBmi.filter((e) => (e.row.bmi as number) >= 30 && e.tier === "andrology_urology").length} reach the specialist gate, consistent with the known association between obesity and lower total testosterone. Candidate refinement for clinician review: treat a single low value as "see a primary doctor and repeat the test" and reserve the specialist gate for a confirmed low value or another cue.
-- **Glucose band inconsistency.** The Ranges page lists 70–99 mg/dL as acceptable, while the engine flags only from 110. Values of 100–109 are neither "acceptable" nor flagged. This is a WHO vs ADA difference and should be stated, or the two aligned.
+- **Testosterone rule refined after the first run.** The first version of this report showed that a single total testosterone below 300 ng/dL sent 353 of 1,726 men (20.5%) straight to the andrology/urology gate. The AUA testosterone-deficiency guideline (2018) advises confirming a low total testosterone with a second early-morning measurement before acting, and NHANES blood draws happen in morning, afternoon, and evening sessions, so many of those low values may be timing effects. The rule now sends a single low reading to primary care with a repeat early-morning test, and opens the specialist gate only when a repeat is also low, or when another cue (semen or anatomical) is present. On this sample, ${lowT.length} of ${withT.length} men with a measured value (${lowTPrev}) are below 300 ng/dL: ${lowTPrimary} are now routed to primary care, ${lowTSpecialty} reach the specialist gate on that value alone, and ${lowTOtherTier} land elsewhere. The confirmed and normal-repeat paths are checked above with a simulated repeat value, because NHANES has no repeat measurement. The 300 ng/dL threshold and the "confirmed" definition still need clinician sign-off.
+- **Glucose band.** The Ranges page now states that the engine flags from 110 mg/dL (WHO) and that ADA uses 100, so values of 100–109 are not flagged by design. The ADA row in section 1 shows how many men that choice leaves unflagged.
 - **What this cannot show.** Semen rules, heat and shift effects, the self-report path, and referral completion are not covered by this dataset.
 
 ## 5. Limits

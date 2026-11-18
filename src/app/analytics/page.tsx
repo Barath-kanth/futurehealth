@@ -116,6 +116,7 @@ export default function AnalyticsPage() {
                 bmi: undefined,
                 semenConcentration: undefined,
                 testosteroneNgDl: undefined,
+                testosteroneRepeatNgDl: undefined,
                 iief5Score: undefined,
               })
             }

@@ -31,7 +31,7 @@ Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Fires
 
 ## Slide 6 — How will success be measured? *
 
-- Triage safety tests pass (19/19)  
+- Triage safety tests pass (23/23)  
 - Closed-loop synthetic funnel (invited→assessed→referred→completed)  
 - Fairness proxies on synthetic cohort (illustrative)  
 - Demo robustness: live link + offline rules path  
@@ -45,7 +45,7 @@ Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Fires
 - AUA/ASRM Male Infertility Guideline 2020/2021 — evaluation pathway themes  
 - EAU / emergency teaching — acute scrotum → urgent  
 - Own simplifications labeled in `TECH.md` (MVI bands invented for demo)
-- Real-data check: triage rules run end to end on 1,726 men aged 18–54 from NHANES 2015–2016 (US CDC public data). All 6 safety invariants hold; flags agree with their reference thresholds. Finding: one total testosterone below 300 ng/dL sends 20.5% of men to the specialist gate, so a repeat-test refinement is proposed for clinician review. This is a rule-behaviour check, not an accuracy study (no infertility labels in NHANES). Details: `docs/validation/NHANES_2015-2016.md`
+- Real-data check: triage rules run end to end on 1,726 men aged 18–54 from NHANES 2015–2016 (US CDC public data). All 9 safety invariants hold; flags agree with their reference thresholds. Finding that changed the rules: a single total testosterone below 300 ng/dL first sent 20.5% of men (353 of 1,726) to the specialist gate. A single low reading now goes to primary care with a repeat early-morning test, and the specialist gate opens only on a confirmed low value or another cue; on this sample 0 men reach it on one reading. Clinician sign-off on the threshold is still pending. This is a rule-behaviour check, not an accuracy study (no infertility labels in NHANES). Details: `docs/validation/NHANES_2015-2016.md`
 
 ---
 

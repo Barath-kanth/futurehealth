@@ -131,6 +131,8 @@ export interface IndependentVariables {
   morphologyPct?: number;
   sdfPct?: number; // sperm DNA fragmentation
   testosteroneNgDl?: number;
+  /** Optional repeat early-morning total testosterone; a low first value is only "confirmed" if this is also low. */
+  testosteroneRepeatNgDl?: number;
   exogenousAndrogenFlag?: boolean; // TRT / steroids
   glucoseMgDl?: number;
   stiRiskFlag?: boolean;

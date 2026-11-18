@@ -837,6 +837,7 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
       morphologyPct: undefined,
       sdfPct: undefined,
       testosteroneNgDl: undefined,
+      testosteroneRepeatNgDl: undefined,
       freeTestosteronePgMl: undefined,
       glucoseMgDl: undefined,
       stiRiskFlag: undefined,

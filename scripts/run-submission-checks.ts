@@ -186,12 +186,25 @@ function fakeAssessment(tier: TriageTier, signals: { id: string; severity: strin
   const consentsOff = { ...consentsOn, clinical_lab: false };
 
   const lowT = evaluateRisk(baseIv({ testosteroneNgDl: 280 }), consentsOn);
-  const lowTSignal = lowT.signals.find((s) => s.id === "hormone-screen");
-  check("low entered testosterone raises the hormone cue", !!lowTSignal);
-  check("hormone cue is tied to clinical/lab consent", lowTSignal?.source === "clinical_lab", String(lowTSignal?.source));
-  check("low testosterone reaches the specialist-review gate with human review", lowT.triage.tier === "andrology_urology" && lowT.triage.requiresHumanReview);
+  const repeatSignal = lowT.signals.find((s) => s.id === "hormone-repeat");
+  check("one low testosterone reading raises a 'repeat test' cue", !!repeatSignal);
+  check("repeat cue is tied to clinical/lab consent", repeatSignal?.source === "clinical_lab", String(repeatSignal?.source));
+  check("one low reading goes to primary care, not the specialist gate", lowT.triage.tier === "primary_care", lowT.triage.tier);
+  check("one low reading does not raise the confirmed hormone cue", !lowT.signals.some((s) => s.id === "hormone-screen"));
+
+  const confirmed = evaluateRisk(baseIv({ testosteroneNgDl: 280, testosteroneRepeatNgDl: 260 }), consentsOn);
+  const confirmedSignal = confirmed.signals.find((s) => s.id === "hormone-screen");
+  check("two low readings raise the confirmed hormone cue", !!confirmedSignal);
+  check("confirmed cue is tied to clinical/lab consent", confirmedSignal?.source === "clinical_lab", String(confirmedSignal?.source));
+  check("confirmed low testosterone reaches the specialist gate with human review", confirmed.triage.tier === "andrology_urology" && confirmed.triage.requiresHumanReview);
+
+  const recovered = evaluateRisk(baseIv({ testosteroneNgDl: 280, testosteroneRepeatNgDl: 480 }), consentsOn);
+  check("normal repeat clears the hormone cue", !recovered.signals.some((s) => s.id.startsWith("hormone-")));
+
+  const repeatIgnored = evaluateRisk(baseIv({ testosteroneNgDl: 280, testosteroneRepeatNgDl: 260 }), consentsOff);
+  check("repeat testosterone is ignored without lab consent", !repeatIgnored.signals.some((s) => s.id.startsWith("hormone-")) && repeatIgnored.triage.tier !== "andrology_urology");
   const ignored = evaluateRisk(baseIv({ testosteroneNgDl: 280 }), consentsOff);
-  check("entered testosterone is ignored without lab consent", !ignored.signals.some((s) => s.id === "hormone-screen"));
+  check("entered testosterone is ignored without lab consent", !ignored.signals.some((s) => s.id.startsWith("hormone-")));
   check("glucose 120 mg/dL raises a watch cue", evaluateRisk(baseIv({ glucoseMgDl: 120 }), consentsOn).signals.some((s) => s.id === "glucose-watch"));
   check("glucose 105 mg/dL does not raise a cue (flags from 110)", !evaluateRisk(baseIv({ glucoseMgDl: 105 }), consentsOn).signals.some((s) => s.id === "glucose-watch"));
   check("glucose entered without lab consent is ignored", !evaluateRisk(baseIv({ glucoseMgDl: 200 }), consentsOff).signals.some((s) => s.id === "glucose-watch"));

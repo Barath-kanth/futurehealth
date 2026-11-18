@@ -304,23 +304,49 @@ function evaluateRiskUngated(iv: IndependentVariables): RiskAssessment {
     });
   }
 
+  // A single total-testosterone reading is not enough to act on (AUA 2018: confirm with a
+  // second early-morning measurement). One low value -> primary care + repeat test.
+  // Only a confirmed low value (first and repeat both < 300 ng/dL) opens the specialist gate.
+  // A single low value alongside a semen or anatomical cue still routes to specialist
+  // review through those cues' own rules.
   if (iv.testosteroneNgDl !== undefined && iv.testosteroneNgDl < 300) {
-    pushSignal(signals, {
-      id: "hormone-screen",
-      title: "Hormone panel screening cue",
-      titleAr: "إشارة فحص لوحة الهرمونات",
-      domain: "metabolic",
-      severity: "elevated",
-      confidence: "high",
-      source: "clinical_lab",
-      explanation:
-        "At-home / lab hormone value is below common screening thresholds. Routes to andrology/urology after human clinical review — screening cue only.",
-      explanationAr:
-        "قيمة الهرمون من الجهاز المنزلي/المختبر دون عتبات الفحص الشائعة. يُوجَّه لأندروولوجيا/مسالك بعد مراجعة سريرية بشرية — دون تشخيص آلي.",
-      drivers: [`testosterone=${iv.testosteroneNgDl}`],
-      modifiable: true,
-      weight: 16,
-    });
+    const repeat = iv.testosteroneRepeatNgDl;
+    if (repeat !== undefined && repeat < 300) {
+      pushSignal(signals, {
+        id: "hormone-screen",
+        title: "Confirmed low testosterone (two readings)",
+        titleAr: "تستوستيرون منخفض مؤكد (قراءتان)",
+        domain: "metabolic",
+        severity: "elevated",
+        confidence: "high",
+        source: "clinical_lab",
+        explanation:
+          "Two total-testosterone readings are below common screening thresholds. Routes to andrology/urology after human clinical review — screening cue only.",
+        explanationAr:
+          "قراءتان للتستوستيرون الكلي دون عتبات الفحص الشائعة. يُوجَّه لأندروولوجيا/مسالك بعد مراجعة سريرية بشرية — دون تشخيص آلي.",
+        drivers: [`testosterone=${iv.testosteroneNgDl}`, `repeat=${repeat}`],
+        modifiable: true,
+        weight: 16,
+      });
+    } else if (repeat === undefined) {
+      pushSignal(signals, {
+        id: "hormone-repeat",
+        title: "Low testosterone reading — repeat test advised",
+        titleAr: "قراءة تستوستيرون منخفضة — يُنصح بفحص مكرر",
+        domain: "metabolic",
+        severity: "watch",
+        confidence: "medium",
+        source: "clinical_lab",
+        explanation:
+          "One total-testosterone value is below 300 ng/dL. A single reading is commonly rechecked, so the next step is primary care and a repeat early-morning test, not a specialist referral. Screening cue only.",
+        explanationAr:
+          "قيمة واحدة للتستوستيرون الكلي دون 300 ng/dL. تُعاد القراءة المفردة عادةً، لذا الخطوة التالية الرعاية الأولية وفحص صباحي مكرر وليس إحالة تخصصية. إشارة فحص فقط.",
+        drivers: [`testosterone=${iv.testosteroneNgDl}`],
+        modifiable: true,
+        weight: 8,
+      });
+    }
+    // Repeat >= 300 ng/dL: the low value was not confirmed, so no hormone cue.
   }
 
   // --- Semen parameters (device) ---

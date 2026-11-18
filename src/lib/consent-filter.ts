@@ -38,6 +38,7 @@ export function applyConsents(
 
   if (!consents.clinical_lab) {
     next.testosteroneNgDl = undefined;
+    next.testosteroneRepeatNgDl = undefined;
     next.freeTestosteronePgMl = undefined;
     next.glucoseMgDl = undefined;
     next.stiRiskFlag = undefined;

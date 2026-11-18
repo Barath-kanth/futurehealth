@@ -274,6 +274,44 @@ export const TRIAGE_SAFETY_CASES: SafetyCase[] = [
     note: "App never advises start/stop meds; flag routes for clinician discussion.",
   },
   {
+    id: "single-low-t-primary-care",
+    title: "One low testosterone reading → primary care + repeat test",
+    variables: baseIv({ testosteroneNgDl: 250 }),
+    expect: "primary_care",
+    note: "A single low total T is rechecked before specialty referral (AUA 2018).",
+    assert: ({ signalIds }) =>
+      signalIds.includes("hormone-repeat") && !signalIds.includes("hormone-screen"),
+  },
+  {
+    id: "confirmed-low-t-specialist",
+    title: "Low testosterone confirmed on repeat → andrology gate",
+    variables: baseIv({ testosteroneNgDl: 250, testosteroneRepeatNgDl: 270 }),
+    expect: "andrology_urology",
+    note: "Two low readings open the specialist gate, with human review.",
+    assert: ({ signalIds }) => signalIds.includes("hormone-screen"),
+  },
+  {
+    id: "low-t-repeat-normal",
+    title: "Low first reading, normal repeat → no hormone cue",
+    variables: baseIv({ testosteroneNgDl: 250, testosteroneRepeatNgDl: 520 }),
+    expect: "self_care",
+    note: "An unconfirmed low value must not drive any referral.",
+    assert: ({ signalIds }) =>
+      !signalIds.includes("hormone-screen") && !signalIds.includes("hormone-repeat"),
+  },
+  {
+    id: "single-low-t-plus-semen-cue",
+    title: "One low testosterone reading + semen cue → andrology gate",
+    variables: baseIv({
+      testosteroneNgDl: 250,
+      semenConcentration: 8,
+      motilityPct: 25,
+      morphologyPct: 2,
+    }),
+    expect: "andrology_urology",
+    note: "Another cue (semen) opens the specialist gate even without a repeat test.",
+  },
+  {
     id: "cryptorchidism-history",
     title: "Cryptorchidism history placeholder → andrology",
     variables: baseIv({ cryptorchidismFlag: true }),

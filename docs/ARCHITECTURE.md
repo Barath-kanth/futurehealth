@@ -98,7 +98,7 @@ Age gate (18+) → Consent vault → Consented signals
 - Screening ≠ diagnosis; no medication start/stop advice.  
 - Agents **cannot** change locked triage tier (safety test included).  
 - Doctor chat: safe replies for diagnosis Q, meds Q, sudden pain → urgent, self-harm → crisis redirect.  
-- `npm run test:triage` → 19/19.  
+- `npm run test:triage` → 23/23.  
 - `/boundaries` = what we don’t do.
 
 ---

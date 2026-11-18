@@ -29,25 +29,40 @@ export function LabEntryForm() {
 
   const [tRaw, setTRaw] = useState("");
   const [tUnit, setTUnit] = useState<TestosteroneUnit>("ng/dL");
+  const [rRaw, setRRaw] = useState("");
+  const [rUnit, setRUnit] = useState<TestosteroneUnit>("ng/dL");
   const [gRaw, setGRaw] = useState("");
   const [gUnit, setGUnit] = useState<GlucoseUnit>("mg/dL");
   const [savedNote, setSavedNote] = useState<string | null>(null);
 
   const labOn = consents.clinical_lab;
   const t = testosteroneToNgDl(tRaw, tUnit);
+  const r = testosteroneToNgDl(rRaw, rUnit);
   const g = glucoseToMgDl(gRaw, gUnit);
 
   const tEntered = tRaw.trim() !== "";
+  const rEntered = rRaw.trim() !== "";
   const gEntered = gRaw.trim() !== "";
-  const anyInvalid = (tEntered && !t.ok) || (gEntered && !g.ok);
-  const canSave = labOn && (tEntered || gEntered) && !anyInvalid;
+  const hasFirstReading = tEntered || variables.testosteroneNgDl !== undefined;
+  const repeatNeedsFirst = rEntered && !hasFirstReading;
+  const anyInvalid =
+    (tEntered && !t.ok) || (rEntered && !r.ok) || (gEntered && !g.ok) || repeatNeedsFirst;
+  const canSave = labOn && (tEntered || rEntered || gEntered) && !anyInvalid;
 
   function save() {
-    const patch: { testosteroneNgDl?: number; glucoseMgDl?: number } = {};
+    const patch: {
+      testosteroneNgDl?: number;
+      testosteroneRepeatNgDl?: number;
+      glucoseMgDl?: number;
+    } = {};
     const parts: string[] = [];
     if (tEntered && t.ok) {
       patch.testosteroneNgDl = t.value;
       parts.push(`${ar ? "تستوستيرون" : "testosterone"} ${t.value} ng/dL`);
+    }
+    if (rEntered && r.ok) {
+      patch.testosteroneRepeatNgDl = r.value;
+      parts.push(`${ar ? "تستوستيرون مكرر" : "repeat testosterone"} ${r.value} ng/dL`);
     }
     if (gEntered && g.ok) {
       patch.glucoseMgDl = g.value;
@@ -58,14 +73,21 @@ export function LabEntryForm() {
   }
 
   function clearLabs() {
-    patchVariables({ testosteroneNgDl: undefined, glucoseMgDl: undefined });
+    patchVariables({
+      testosteroneNgDl: undefined,
+      testosteroneRepeatNgDl: undefined,
+      glucoseMgDl: undefined,
+    });
     setTRaw("");
+    setRRaw("");
     setGRaw("");
     setSavedNote(null);
   }
 
   const onFile =
-    variables.testosteroneNgDl !== undefined || variables.glucoseMgDl !== undefined;
+    variables.testosteroneNgDl !== undefined ||
+    variables.testosteroneRepeatNgDl !== undefined ||
+    variables.glucoseMgDl !== undefined;
 
   return (
     <section className="rounded-2xl border border-[var(--line)] bg-[var(--mist)] p-5 space-y-4">
@@ -126,6 +148,46 @@ export function LabEntryForm() {
                 {ar
                   ? "قيمة منخفضة واحدة تحتاج تأكيدًا بفحص صباحي مبكر ثانٍ. هذا ليس تشخيصًا."
                   : "One low value needs confirming with a second early-morning test. This is not a diagnosis."}
+              </p>
+              <label className="mt-3 block text-sm text-[var(--ink)]" htmlFor="lab-t2">
+                {ar ? "تستوستيرون مكرر (صباح مبكر، اختياري)" : "Repeat early-morning testosterone (optional)"}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="lab-t2"
+                  inputMode="decimal"
+                  value={rRaw}
+                  onChange={(e) => setRRaw(e.target.value)}
+                  placeholder={rUnit === "ng/dL" ? "e.g. 280" : "e.g. 9.7"}
+                  className="w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm"
+                />
+                <select
+                  value={rUnit}
+                  onChange={(e) => setRUnit(e.target.value as TestosteroneUnit)}
+                  aria-label="Repeat testosterone unit"
+                  className="rounded-md border border-[var(--line)] bg-white px-2 text-sm"
+                >
+                  <option value="ng/dL">ng/dL</option>
+                  <option value="nmol/L">nmol/L</option>
+                </select>
+              </div>
+              {rEntered && r.ok && rUnit === "nmol/L" && (
+                <p className="text-[11px] text-[var(--muted)]">= {r.value} ng/dL</p>
+              )}
+              {rEntered && (
+                <p className="text-[11px] text-[var(--urgent)]">
+                  {errorText(r, ar, TESTOSTERONE_RANGE_NGDL.min, TESTOSTERONE_RANGE_NGDL.max)}
+                </p>
+              )}
+              {repeatNeedsFirst && (
+                <p className="text-[11px] text-[var(--urgent)]">
+                  {ar ? "أدخل القراءة الأولى أيضًا." : "Enter the first reading too."}
+                </p>
+              )}
+              <p className="text-[11px] text-[var(--muted)]">
+                {ar
+                  ? "قراءة أولى منخفضة وحدها تؤدي إلى الرعاية الأولية. تُفتح المراجعة التخصصية فقط إذا أكّد الفحص المكرر الانخفاض."
+                  : "A single low reading leads to primary care. Specialist review opens only if the repeat confirms the low value."}
               </p>
             </div>
 
