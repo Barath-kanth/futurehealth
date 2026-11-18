@@ -90,8 +90,10 @@ export const METABOLIC_RANGES = [
     name: "Fasting blood glucose",
     nameAr: "جلوكوز الصيام",
     acceptable: "70 – 99 mg/dL (3.9 – 5.5 mmol/L)",
-    notes: "Metabolic energy & recovery.",
-    notesAr: "طاقة التمثيل الغذائي والتعافي.",
+    notes:
+      "Metabolic energy & recovery. This prototype raises a watch cue from 110 mg/dL (WHO impaired fasting glucose); ADA uses 100.",
+    notesAr:
+      "طاقة التمثيل الغذائي والتعافي. ينبّه هذا النموذج من ١١٠ ملغ/دل (منظمة الصحة العالمية)؛ ADA تستخدم ١٠٠.",
   },
   {
     id: "vitd",

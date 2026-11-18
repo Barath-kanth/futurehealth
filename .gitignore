@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# NHANES raw downloads (derived CSV in data/nhanes is committed)
+/data/nhanes/raw/

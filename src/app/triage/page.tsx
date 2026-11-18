@@ -1,6 +1,7 @@
 "use client";
 
 import { CareAccessPanel } from "@/components/CareAccessPanel";
+import { LabEntryForm } from "@/components/LabEntryForm";
 import { SelfReportForm } from "@/components/SelfReportForm";
 import { SimulatedBadge } from "@/components/SimulatedBadge";
 import { TriageBadge } from "@/components/SeverityBadge";
@@ -165,6 +166,8 @@ export default function TriagePage() {
       )}
 
       <SelfReportForm />
+
+      <LabEntryForm />
 
       <section className="rounded-2xl border border-dashed border-[var(--line)] bg-[var(--mist)] p-4">
         <div className="flex flex-wrap items-center gap-2">

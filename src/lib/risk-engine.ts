@@ -312,7 +312,7 @@ function evaluateRiskUngated(iv: IndependentVariables): RiskAssessment {
       domain: "metabolic",
       severity: "elevated",
       confidence: "high",
-      source: "at_home_device",
+      source: "clinical_lab",
       explanation:
         "At-home / lab hormone value is below common screening thresholds. Routes to andrology/urology after human clinical review — screening cue only.",
       explanationAr:

@@ -45,6 +45,7 @@ Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Fires
 - AUA/ASRM Male Infertility Guideline 2020/2021 — evaluation pathway themes  
 - EAU / emergency teaching — acute scrotum → urgent  
 - Own simplifications labeled in `TECH.md` (MVI bands invented for demo)
+- Real-data check: triage rules run end to end on 1,726 men aged 18–54 from NHANES 2015–2016 (US CDC public data). All 6 safety invariants hold; flags agree with their reference thresholds. Finding: one total testosterone below 300 ng/dL sends 20.5% of men to the specialist gate, so a repeat-test refinement is proposed for clinician review. This is a rule-behaviour check, not an accuracy study (no infertility labels in NHANES). Details: `docs/validation/NHANES_2015-2016.md`
 
 ---
 
@@ -58,6 +59,8 @@ Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Fires
 | Env heat/AQI (simulated fallback) | Simulated | SeedShield | Medium | Vault opt-in |
 | Self-report form (shifts, heat hours, sitting, stress) | User-entered | User | Medium | Self-report consent; stays in browser |
 | Referral packet (mock) | Minimum-necessary fields only | SeedShield | Low | Explicit opt-in; mock endpoint, nothing stored or forwarded |
+| User-entered lab values (testosterone, fasting glucose) | User-entered, unverified | User | High if real | Clinical/lab consent; stays in browser |
+| NHANES 2015–2016 (US CDC/NCHS) | Public survey and lab data | US government | Low (de-identified, public domain) | Public use; rule validation only |
 | Wearable streams | Simulated | User consent | Medium | Vault opt-in |
 | Curated research stubs | Public literature pointers | Public | Low | Attribution in Radar |
 | No real PHI on servers | — | — | — | Browser demo + synthetic persist |
@@ -96,7 +99,8 @@ Optional simulated watch / home kit — **no physical hardware required for demo
 2. Partner clinic / SEHA-style pilot under UAE data governance  
 3. Consented EHR category pulls (not chart dumps)  
 4. Keep Simulated tags until validation partners  
-5. Cost: Cloud Run min-instances → 0 after demos; Firestore not Cloud SQL
+5. Cost: Cloud Run min-instances → 0 after demos; Firestore not Cloud SQL  
+6. Referral handoff today is a mock endpoint with a minimum-necessary packet. Live teleconsult and verified-specialist routing need partner agreements and are not built.
 
 ---
 

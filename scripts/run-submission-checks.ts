@@ -3,6 +3,9 @@
  * Run: npm run test:submission
  */
 import { coarseCoords, heatIndexC, usAqiFromPm25 } from "../src/lib/env-live";
+import { glucoseToMgDl, testosteroneToNgDl } from "../src/lib/lab-units";
+import { evaluateRisk } from "../src/lib/risk-engine";
+import { baseIv } from "../src/lib/triage-safety";
 import {
   buildReferralPacket,
   sanitizeReferralPacket,
@@ -154,6 +157,44 @@ function fakeAssessment(tier: TriageTier, signals: { id: string; severity: strin
     !sanitizeReferralPacket({ ...good, reasonCodes: ["Heat-Stress"] }).ok,
   );
   check("non-object body is rejected", !sanitizeReferralPacket("hello").ok);
+}
+
+// --- Self-entered lab values ---
+{
+  const t = (raw: string, unit: "ng/dL" | "nmol/L") => testosteroneToNgDl(raw, unit);
+  const g = (raw: string, unit: "mg/dL" | "mmol/L") => glucoseToMgDl(raw, unit);
+
+  const t104 = t("10.4", "nmol/L");
+  check("10.4 nmol/L converts to 300 ng/dL", t104.ok && t104.value === 300, JSON.stringify(t104));
+  const t540 = t("540", "ng/dL");
+  check("540 ng/dL is kept as 540", t540.ok && t540.value === 540);
+  const g61 = g("6.1", "mmol/L");
+  check("6.1 mmol/L converts to 110 mg/dL", g61.ok && g61.value === 110, JSON.stringify(g61));
+  const g55 = g("5.5", "mmol/L");
+  check("5.5 mmol/L converts to 99 mg/dL", g55.ok && g55.value === 99, JSON.stringify(g55));
+  const gComma = g("5,5", "mmol/L");
+  check("decimal comma is accepted", gComma.ok && gComma.value === 99);
+  check("empty lab entry is flagged empty", !t("", "ng/dL").ok && (t("", "ng/dL") as { error: string }).error === "empty");
+  check("text lab entry is rejected", !t("abc", "ng/dL").ok);
+  check("negative lab entry is rejected", !g("-90", "mg/dL").ok);
+  check("testosterone of 0 is out of range", !t("0", "ng/dL").ok);
+  check("testosterone of 5000 ng/dL is out of range", !t("5000", "ng/dL").ok);
+  check("glucose 5000 mg/dL is out of range", !g("5000", "mg/dL").ok);
+  check("540 typed as nmol/L is caught as implausible", !t("540", "nmol/L").ok);
+
+  const consentsOn = { wearable: true, at_home_device: false, clinical_lab: true, environment: true, self_report: true, family_mode: false };
+  const consentsOff = { ...consentsOn, clinical_lab: false };
+
+  const lowT = evaluateRisk(baseIv({ testosteroneNgDl: 280 }), consentsOn);
+  const lowTSignal = lowT.signals.find((s) => s.id === "hormone-screen");
+  check("low entered testosterone raises the hormone cue", !!lowTSignal);
+  check("hormone cue is tied to clinical/lab consent", lowTSignal?.source === "clinical_lab", String(lowTSignal?.source));
+  check("low testosterone reaches the specialist-review gate with human review", lowT.triage.tier === "andrology_urology" && lowT.triage.requiresHumanReview);
+  const ignored = evaluateRisk(baseIv({ testosteroneNgDl: 280 }), consentsOff);
+  check("entered testosterone is ignored without lab consent", !ignored.signals.some((s) => s.id === "hormone-screen"));
+  check("glucose 120 mg/dL raises a watch cue", evaluateRisk(baseIv({ glucoseMgDl: 120 }), consentsOn).signals.some((s) => s.id === "glucose-watch"));
+  check("glucose 105 mg/dL does not raise a cue (flags from 110)", !evaluateRisk(baseIv({ glucoseMgDl: 105 }), consentsOn).signals.some((s) => s.id === "glucose-watch"));
+  check("glucose entered without lab consent is ignored", !evaluateRisk(baseIv({ glucoseMgDl: 200 }), consentsOff).signals.some((s) => s.id === "glucose-watch"));
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);
