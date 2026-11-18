@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useSeedShield } from "@/lib/store";
 import clsx from "clsx";
 import { CHAT_GREETING_PREFIX, chatGreetingAr } from "@/lib/ui-words";
-import { ASSIGNED_DOCTOR } from "@/lib/me-profile";
 
 const QUICK = [
   { en: "Is this about fertility diagnosis?", ar: "هل هذا تشخيص خصوبة؟" },
@@ -34,12 +33,12 @@ export function DoctorChat() {
     <div className="flex h-[min(70vh,640px)] flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--mist)]">
       <div className="border-b border-[var(--line)] bg-[var(--cedar)] px-4 py-3 text-[var(--mist)]">
         <div className="text-sm font-semibold">
-          {ar ? "محادثة مع الدليل السريري" : "Chat with clinical guide"}
+          {ar ? "مرشد الفحص الذكي (Gemini)" : "AI screening guide (Gemini)"}
         </div>
         <div className="text-[11px] text-[var(--mist)]/75">
           {ar
-            ? `مؤشرك ${vitalityIndex} · إرشاد فحص · مراجعة بشرية عند الحاجة`
-            : `Your index ${vitalityIndex} · screening guidance · human review when needed`}
+            ? `مؤشرك ${vitalityIndex} · ذكاء اصطناعي وليس طبيبًا · مراجعة بشرية عند الحاجة`
+            : `Your index ${vitalityIndex} · AI, not a clinician · human review when needed`}
         </div>
       </div>
 
@@ -55,8 +54,17 @@ export function DoctorChat() {
             )}
           >
             {ar && m.text.startsWith(CHAT_GREETING_PREFIX)
-              ? chatGreetingAr(ASSIGNED_DOCTOR.nameAr)
+              ? chatGreetingAr()
               : m.text}
+            {m.role === "doctor" && m.provider && !m.pending && (
+              <div className="mt-1 text-[10px] text-[var(--ink)]/55">
+                {m.provider === "vertex-ai"
+                  ? ar ? "أنشأه Gemini ضمن قواعد أمان" : "Written by Gemini within fixed safety rules"
+                  : m.provider === "rules-safety"
+                    ? ar ? "رد أمان ثابت" : "Fixed safety reply"
+                    : ar ? "رد قائم على القواعد" : "Rule-based reply"}
+              </div>
+            )}
           </div>
         ))}
         <div ref={bottom} />

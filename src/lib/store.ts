@@ -2,6 +2,8 @@
 
 import { create } from "zustand";
 import { evaluateRisk, mergeVariables } from "./risk-engine";
+import { applyConsents } from "./consent-filter";
+import { CHAT_GREETING_EN } from "./ui-words";
 import { coarseCoords, DEFAULT_COORDS as DEFAULT_ENV_COORDS } from "./env-live";
 import { getPersona } from "./personas";
 import { ME, ASSIGNED_DOCTOR, PAIRABLE_DEVICES } from "./me-profile";
@@ -23,6 +25,7 @@ import {
   buildIndexSeries,
   computeVitalityIndex,
   doctorReply,
+  safetyReply,
   getJob,
   inferJobType,
   scoreBodyRegions,
@@ -46,6 +49,9 @@ export type ChatMessage = {
   role: "user" | "doctor" | "system";
   text: string;
   at: string;
+  /** Who wrote an assistant reply: Gemini, the fixed safety rules, or the rule-based fallback. */
+  provider?: "vertex-ai" | "rules-safety" | "rules";
+  pending?: boolean;
 };
 
 export type AppNotification = {
@@ -307,7 +313,7 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
     {
       id: "welcome",
       role: "doctor",
-      text: `Hi — I’m a SIMULATED clinician (${ASSIGNED_DOCTOR.name}) for this demo. I only receive index alerts if you opt in under Vault. Screening ≠ diagnosis. Open Safe Triage for your pathway.`,
+      text: CHAT_GREETING_EN,
       at: "session-start",
     },
   ],
@@ -363,7 +369,7 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
         {
           id: "welcome",
           role: "doctor",
-          text: `Hi — I’m a SIMULATED clinician (${ASSIGNED_DOCTOR.name}) for this demo. I only receive index alerts if you opt in under Vault. Screening ≠ diagnosis. Open Safe Triage for your pathway.`,
+          text: CHAT_GREETING_EN,
           at: "session-start",
         },
       ],
@@ -704,24 +710,89 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
   sendChat: (text) => {
     const trimmed = text.trim();
     if (!trimmed) return;
-    const { variables, vitalityIndex, locale, chat } = get();
+    const { variables, vitalityIndex, locale, chat, consents } = get();
+    const now = Date.now();
+    const userMsg: ChatMessage = {
+      id: `u-${now}`,
+      role: "user",
+      text: trimmed,
+      at: new Date().toISOString(),
+    };
+
+    // Crisis, sudden pain, medicine and "diagnosis" questions are answered by fixed rules,
+    // instantly and without the network. A model never sees them first.
+    const safe = safetyReply(trimmed, variables, locale);
+    if (safe) {
+      set({
+        chat: [
+          ...chat,
+          userMsg,
+          {
+            id: `d-${now + 1}`,
+            role: "doctor",
+            text: safe,
+            at: new Date().toISOString(),
+            provider: "rules-safety",
+          },
+        ],
+      });
+      return;
+    }
+
+    const pendingId = `d-${now + 1}`;
     set({
       chat: [
         ...chat,
+        userMsg,
         {
-          id: `u-${Date.now()}`,
-          role: "user",
-          text: trimmed,
-          at: new Date().toISOString(),
-        },
-        {
-          id: `d-${Date.now() + 1}`,
+          id: pendingId,
           role: "doctor",
-          text: doctorReply(trimmed, variables, vitalityIndex, locale),
+          text: locale === "ar" ? "أفكر…" : "Thinking…",
           at: new Date().toISOString(),
+          pending: true,
         },
       ],
     });
+
+    const filtered = applyConsents(variables, consents);
+    const history = chat
+      .filter((m) => (m.role === "user" || m.role === "doctor") && !m.pending && m.id !== "welcome")
+      .slice(-6)
+      .map((m) => ({ role: m.role === "user" ? ("user" as const) : ("guide" as const), text: m.text }));
+
+    const finish = (reply: string, provider: ChatMessage["provider"]) =>
+      set((st) => ({
+        chat: st.chat.map((m) =>
+          m.id === pendingId ? { ...m, text: reply, provider, pending: false } : m,
+        ),
+      }));
+
+    void (async () => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 25000);
+      try {
+        const res = await fetch("/api/doctor-chat", {
+          method: "POST",
+          signal: controller.signal,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: trimmed,
+            variables: filtered,
+            index: vitalityIndex,
+            locale,
+            consents,
+            history,
+          }),
+        });
+        const data = (await res.json()) as { reply?: string; provider?: ChatMessage["provider"] };
+        if (!res.ok || !data.reply) throw new Error("chat failed");
+        finish(data.reply, data.provider ?? "rules");
+      } catch {
+        finish(doctorReply(trimmed, filtered, vitalityIndex, locale), "rules");
+      } finally {
+        clearTimeout(timer);
+      }
+    })();
   },
 
   completeAction: (id) =>

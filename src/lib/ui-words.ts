@@ -24,6 +24,8 @@ export const DISCLAIMER_AR =
 export const DISCLAIMER_EN =
   "Screening signals only — not a diagnosis. Specialist referral requires human clinical review. SeedShield never issues a diagnosis.";
 
-export const CHAT_GREETING_PREFIX = "Hi — I’m a SIMULATED clinician";
-export const chatGreetingAr = (doctorName: string) =>
-  `مرحبًا — أنا طبيب محاكى (${doctorName}) لهذا العرض فقط. لا أستلم تنبيهات المؤشر إلا إذا وافقت في صفحة الخصوصية. الفحص ليس تشخيصًا. افتح «خطوتي» لترى مسارك.`;
+export const CHAT_GREETING_PREFIX = "Hi — I’m SeedShield’s AI screening guide";
+export const CHAT_GREETING_EN =
+  "Hi — I’m SeedShield’s AI screening guide, not a clinician. My answers come from Gemini inside fixed safety rules and use only the data you consent to. Screening ≠ diagnosis. Open Safe Triage for your pathway.";
+export const chatGreetingAr = () =>
+  `مرحبًا — أنا مرشد SeedShield الذكي للفحص، ولست طبيبًا. تأتي إجاباتي من Gemini ضمن قواعد أمان ثابتة وتعتمد فقط على البيانات التي توافق عليها. الفحص ليس تشخيصًا. افتح «خطوتي» لترى مسارك.`;

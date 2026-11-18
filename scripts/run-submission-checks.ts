@@ -18,6 +18,8 @@ import {
 } from "../src/lib/care-journey";
 import { glucoseToMgDl, testosteroneToNgDl } from "../src/lib/lab-units";
 import { evaluateRisk } from "../src/lib/risk-engine";
+import { isSafeChatReply } from "../src/lib/chat-guard";
+import { safetyReply } from "../src/lib/vitality-analyst";
 import { baseIv } from "../src/lib/triage-safety";
 import {
   buildReferralPacket,
@@ -221,6 +223,25 @@ function fakeAssessment(tier: TriageTier, signals: { id: string; severity: strin
   check("glucose 120 mg/dL raises a watch cue", evaluateRisk(baseIv({ glucoseMgDl: 120 }), consentsOn).signals.some((s) => s.id === "glucose-watch"));
   check("glucose 105 mg/dL does not raise a cue (flags from 110)", !evaluateRisk(baseIv({ glucoseMgDl: 105 }), consentsOn).signals.some((s) => s.id === "glucose-watch"));
   check("glucose entered without lab consent is ignored", !evaluateRisk(baseIv({ glucoseMgDl: 200 }), consentsOff).signals.some((s) => s.id === "glucose-watch"));
+}
+
+// --- Chat: fixed safety rules run first; model replies must pass the output guard ---
+{
+  const iv = baseIv({});
+  check("chat safety: self-harm message gets the fixed crisis reply", /urgent help/.test(safetyReply("I want to kill myself", iv, "en") ?? ""));
+  check("chat safety: sudden testicular pain gets the fixed urgent-care reply", /urgent care/i.test(safetyReply("I have sudden testicular pain", iv, "en") ?? ""));
+  check("chat safety: stopping medication gets the fixed refusal", /never advise/i.test(safetyReply("Should I stop my testosterone?", iv, "en") ?? ""));
+  check("chat safety: 'is this a fertility diagnosis' gets the fixed answer", /not a fertility diagnosis/i.test(safetyReply("is this about fertility diagnosis?", iv, "en") ?? ""));
+  check("chat safety: Arabic crisis message is caught", safetyReply("أفكر في الانتحار", iv, "ar") !== null);
+  check("chat safety: an ordinary question is left for the model (null)", safetyReply("How can I sleep better?", iv, "en") === null);
+
+  check("chat guard: accepts a calm lifestyle answer", isSafeChatReply("Heat and short sleep can add strain. Try earlier wind-down and fewer hours outdoors at midday. This is screening, not a diagnosis."));
+  check("chat guard: rejects 'you have low testosterone'", !isSafeChatReply("You have low testosterone and should act on it."));
+  check("chat guard: rejects a dose", !isSafeChatReply("Take 50 mg daily for a month."));
+  check("chat guard: rejects advice to start testosterone", !isSafeChatReply("You could start taking testosterone to fix this."));
+  check("chat guard: rejects pregnancy-chance claims", !isSafeChatReply("Your pregnancy chance is high."));
+  check("chat guard: rejects an Arabic diagnosis", !isSafeChatReply("أنت عقيم حسب النتائج"));
+  check("chat guard: rejects empty and over-long replies", !isSafeChatReply("   ") && !isSafeChatReply("a".repeat(2000)));
 }
 
 // --- Semen screening cut-offs follow WHO 6th edition (2021): 16 M/mL, 42% total motility, 4% normal forms ---

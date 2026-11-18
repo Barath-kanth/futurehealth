@@ -871,12 +871,16 @@ export function buildNotifications(
   return notes;
 }
 
-export function doctorReply(
+/**
+ * Hard safety replies. These run before any model is called, never depend on the network,
+ * and cannot be changed by a model: crisis, sudden testicular pain, medicine changes,
+ * and "is this a fertility diagnosis". Returns null for every other message.
+ */
+export function safetyReply(
   message: string,
   iv: IndependentVariables,
-  index: number,
   locale: Locale,
-): string {
+): string | null {
   const lower = message.toLowerCase();
   const ar = locale === "ar";
 
@@ -924,6 +928,21 @@ export function doctorReply(
       ? `لا — هذا ليس تشخيص خصوبة. SeedShield فحص أولي فقط (فحص ≠ تشخيص). أي مسار تخصصي يحتاج مراجعة بشرية أولًا.`
       : `No — this is not a fertility diagnosis. SeedShield is an early check only (screening ≠ diagnosis). Any specialty path needs a human clinician first.`;
   }
+
+  return null;
+}
+
+export function doctorReply(
+  message: string,
+  iv: IndependentVariables,
+  index: number,
+  locale: Locale,
+): string {
+  const lower = message.toLowerCase();
+  const ar = locale === "ar";
+
+  const safe = safetyReply(message, iv, locale);
+  if (safe) return safe;
 
   if (/job|work|shift|مكتب|ورد|عمل/.test(lower)) {
     return ar
