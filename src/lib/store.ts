@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { evaluateRisk, mergeVariables } from "./risk-engine";
-import { DEFAULT_COORDS as DEFAULT_ENV_COORDS } from "./env-live";
+import { coarseCoords, DEFAULT_COORDS as DEFAULT_ENV_COORDS } from "./env-live";
 import { getPersona } from "./personas";
 import { ME, ASSIGNED_DOCTOR, PAIRABLE_DEVICES } from "./me-profile";
 import { getScenario } from "./scenarios";
@@ -875,7 +875,15 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
       set({ envSource: "simulated" });
       return;
     }
-    const target = coords ?? DEFAULT_ENV_COORDS;
+    // Round in the browser so a precise location never leaves the device.
+    const target = coarseCoords(
+      (coords ?? DEFAULT_ENV_COORDS).lat,
+      (coords ?? DEFAULT_ENV_COORDS).lon,
+    );
+    if (!target) {
+      set({ envSource: "simulated" });
+      return;
+    }
     try {
       const res = await fetch(
         `/api/env?lat=${target.lat}&lon=${target.lon}`,
