@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { useSeedShield } from "@/lib/store";
 import { NotificationBell } from "@/components/NotificationBell";
 import { AgeGate } from "@/components/AgeGate";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /** Patient-first nav — keep short. Extra pages live under More. */
 const NAV = [
@@ -30,12 +30,21 @@ const MORE = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { locale, setLocale, ageVerified, resetDemoData, interactionMode } =
+  const { locale, setLocale, ageVerified, resetDemoData, interactionMode, discreet, setDiscreet } =
     useSeedShield();
   const ar = locale === "ar";
   const textOnly = interactionMode === "text";
   const [moreOpen, setMoreOpen] = useState(false);
   const moreActive = MORE.some((m) => m.href === pathname);
+
+  // Discreet mode: neutral browser-tab title (re-applied on every navigation).
+  useEffect(() => {
+    if (!discreet) return;
+    const t = window.setTimeout(() => {
+      document.title = "Health check";
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [discreet, pathname]);
 
   return (
     <div
@@ -111,6 +120,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 className="hidden rounded-md border border-[var(--line)] px-2 py-1.5 text-[10px] text-[var(--muted)] sm:inline"
               >
                 {ar ? "إعادة" : "Reset"}
+              </button>
+            )}
+            {ageVerified && (
+              <button
+                type="button"
+                aria-pressed={discreet}
+                onClick={() => setDiscreet(!discreet)}
+                className={clsx(
+                  "rounded-md border px-2 py-1.5 text-[10px]",
+                  discreet
+                    ? "border-[var(--cedar)] bg-[var(--cedar)] text-[var(--mist)]"
+                    : "border-[var(--line)] text-[var(--muted)]",
+                )}
+              >
+                {ar ? "الوضع الخفي" : "Discreet"}
+              </button>
+            )}
+            {ageVerified && discreet && (
+              <button
+                type="button"
+                onClick={() => window.location.replace("https://www.google.com")}
+                className="rounded-md border border-[var(--urgent)] px-2 py-1.5 text-[10px] text-[var(--urgent)]"
+              >
+                {ar ? "خروج سريع" : "Quick exit"}
               </button>
             )}
             <button

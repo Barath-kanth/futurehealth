@@ -3,6 +3,18 @@
  * Run: npm run test:submission
  */
 import { coarseCoords, heatIndexC, usAqiFromPm25 } from "../src/lib/env-live";
+import {
+  CALENDAR_FILENAME,
+  NEUTRAL_DESCRIPTION,
+  NEUTRAL_FOLLOW_UP_TITLE,
+  NEUTRAL_VISIT_TITLE,
+  SUMMARY_FILENAME,
+  buildClinicianSummary,
+  buildIcs,
+  isLocalDateTime,
+  randomHex,
+  videoRoomUrl,
+} from "../src/lib/care-journey";
 import { glucoseToMgDl, testosteroneToNgDl } from "../src/lib/lab-units";
 import { evaluateRisk } from "../src/lib/risk-engine";
 import { baseIv } from "../src/lib/triage-safety";
@@ -208,6 +220,69 @@ function fakeAssessment(tier: TriageTier, signals: { id: string; severity: strin
   check("glucose 120 mg/dL raises a watch cue", evaluateRisk(baseIv({ glucoseMgDl: 120 }), consentsOn).signals.some((s) => s.id === "glucose-watch"));
   check("glucose 105 mg/dL does not raise a cue (flags from 110)", !evaluateRisk(baseIv({ glucoseMgDl: 105 }), consentsOn).signals.some((s) => s.id === "glucose-watch"));
   check("glucose entered without lab consent is ignored", !evaluateRisk(baseIv({ glucoseMgDl: 200 }), consentsOff).signals.some((s) => s.id === "glucose-watch"));
+}
+
+// --- Care journey: video link, calendar reminders, clinician summary ---
+{
+  const consents = { wearable: true, at_home_device: false, clinical_lab: true, environment: true, self_report: true, family_mode: false };
+  const consentsNoLab = { ...consents, clinical_lab: false };
+  const iv = baseIv({ testosteroneNgDl: 250, glucoseMgDl: 92 });
+  const assessment = evaluateRisk(iv, consents);
+  const now = new Date("2026-11-18T09:00:00Z");
+
+  // Video room
+  const hexA = randomHex(12);
+  const hexB = randomHex(12);
+  check("random room id has 96 bits (24 hex chars)", /^[0-9a-f]{24}$/.test(hexA), hexA);
+  check("two room ids differ", hexA !== hexB);
+  const url = videoRoomUrl(hexA);
+  check("video room is a public Jitsi Meet https link", url === `https://meet.jit.si/SeedShield-${hexA}`);
+  check("video link carries no personal or health words", !/name|test|hormone|semen|fertil|urolog/i.test(url.replace("SeedShield", "")));
+  let rejected = false;
+  try { videoRoomUrl("abc123"); } catch { rejected = true; }
+  check("a guessable short room id is refused", rejected);
+
+  // Date validation
+  check("valid local date-time is accepted", isLocalDateTime("2026-11-25T09:30"));
+  check("impossible date (31 Feb) is rejected", !isLocalDateTime("2026-02-31T10:00"));
+  check("garbage date is rejected", !isLocalDateTime("tomorrow"));
+
+  // Calendar file
+  const ics = buildIcs(
+    [
+      { uid: "v1", title: NEUTRAL_VISIT_TITLE, start: "2026-11-25T10:00", durationMin: 30, description: `${NEUTRAL_DESCRIPTION} Video link: ${url}`, url, alarms: ["-P1D", "-PT1H"], alarmText: NEUTRAL_VISIT_TITLE },
+      { uid: "f1", title: NEUTRAL_FOLLOW_UP_TITLE, start: "2026-12-02T08:00", durationMin: 15, description: NEUTRAL_DESCRIPTION, alarms: ["-P1D", "PT0M"], alarmText: NEUTRAL_FOLLOW_UP_TITLE },
+    ],
+    now,
+  );
+  check("calendar file is a valid VCALENDAR with CRLF line ends", ics.startsWith("BEGIN:VCALENDAR\r\n") && ics.endsWith("END:VCALENDAR\r\n") && !/[^\r]\n/.test(ics));
+  check("calendar has a visit event with the video link", ics.includes("DTSTART:20261125T100000") && ics.includes("DTEND:20261125T103000") && ics.includes(`URL:${url}`));
+  check("calendar has a follow-up event on the chosen date", ics.includes("DTSTART:20261202T080000"));
+  check("calendar events carry reminder alarms", (ics.match(/BEGIN:VALARM/g) ?? []).length === 4 && ics.includes("TRIGGER:-P1D") && ics.includes("TRIGGER:-PT1H") && ics.includes("TRIGGER:PT0M"));
+  check("calendar text is neutral (no body system, test, or condition words)", !/testosterone|semen|sperm|hormone|fertil|androl|urolog|reproduct|infertil|diabet|glucose/i.test(ics));
+  check("calendar lines are folded to 75 octets or fewer", ics.split("\r\n").every((l) => new TextEncoder().encode(l).length <= 75));
+  check("calendar and summary filenames are neutral", /^health-check/.test(CALENDAR_FILENAME) && /^health-check/.test(SUMMARY_FILENAME(now)));
+  let badIcs = false;
+  try { buildIcs([{ uid: "x", title: "t", start: "not-a-date", durationMin: 5, alarms: [], alarmText: "t" }], now); } catch { badIcs = true; }
+  check("calendar refuses an invalid date", badIcs);
+
+  // Clinician summary
+  const base = { assessment, variables: iv, consents };
+  const s0 = buildClinicianSummary({ ...base, options: { includeLabs: false, includeSelfReport: false, now } });
+  check("summary says it is not a diagnosis", /not a diagnosis/i.test(s0));
+  check("summary lists why the result appeared", /Why this appeared/.test(s0) && /Low testosterone reading/.test(s0));
+  check("summary leaves lab values out unless the person ticks them", !/250 ng\/dL|92 mg\/dL/.test(s0));
+  const s1 = buildClinicianSummary({ ...base, options: { includeLabs: true, includeSelfReport: false, now } });
+  check("summary includes lab values once ticked", /Total testosterone: 250 ng\/dL/.test(s1) && /Fasting glucose: 92 mg\/dL/.test(s1));
+  const s2 = buildClinicianSummary({ assessment, variables: iv, consents: consentsNoLab, options: { includeLabs: true, includeSelfReport: false, now } });
+  check("summary never includes lab values when lab consent is off, even if ticked", !/250 ng\/dL|92 mg\/dL/.test(s2));
+  const s3 = buildClinicianSummary({ ...base, options: { includeLabs: false, includeSelfReport: true, now } });
+  check("summary includes lifestyle answers only when ticked and consented", /Self-reported lifestyle/.test(s3) && !/Self-reported lifestyle/.test(s0));
+  const s4 = buildClinicianSummary({ assessment, variables: iv, consents: { ...consents, self_report: false }, options: { includeLabs: false, includeSelfReport: true, now } });
+  check("summary omits lifestyle answers when self-report consent is off", !/Self-reported lifestyle/.test(s4));
+  check("summary carries the repeat-test question for a single low reading", /repeat early-morning test/.test(s0));
+  check("summary has no name, email, phone, or coordinates", !/@|\+?\d{9,}|\blat(itude)?\b|\blon(gitude)?\b|\bname\b:/i.test(s1.replace("No name or contact details are included", "")));
+  check("summary says area-level heat is not personal exposure", /area-level, not personal exposure/.test(s0));
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

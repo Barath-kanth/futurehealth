@@ -1,5 +1,6 @@
 "use client";
 
+import { ClinicianVisitPanel } from "@/components/ClinicianVisitPanel";
 import { SimulatedBadge } from "@/components/SimulatedBadge";
 import {
   buildReferralPacket,
@@ -84,15 +85,9 @@ export function CareAccessPanel() {
     <section className="rounded-2xl border border-[var(--line)] bg-[var(--mist)] p-5 space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         <h2 className="font-display text-xl text-[var(--cedar)]">
-          {ar ? "الوصول للرعاية — خطوة منخفضة الاحتكاك" : "Care access — low-friction next step"}
+          {ar ? "الوصول للرعاية" : "Care access"}
         </h2>
-        <SimulatedBadge ar={ar} />
       </div>
-      <p className="text-xs text-[var(--muted)]">
-        {ar
-          ? "الحجز والاستشارة عن بعد يرسلان حزمة إحالة محدودة إلى نقطة تجريبية، بعد موافقتك."
-          : "Booking and teleconsult send a minimum-necessary referral packet to a mock endpoint, after your opt-in."}
-      </p>
 
       <div className="flex flex-wrap gap-2">
         {(
@@ -132,7 +127,20 @@ export function CareAccessPanel() {
             : "Warning signs: get urgent care now. This app does not send a referral for urgent symptoms."}
         </p>
       ) : showBooking ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
+          <ClinicianVisitPanel />
+
+          <div className="flex flex-wrap items-center gap-2 border-t border-[var(--line)] pt-4">
+            <h3 className="font-display text-lg text-[var(--cedar)]">
+              {ar ? "عرض تجريبي: حجز عيادة محاكى" : "Demo only: simulated clinic booking"}
+            </h3>
+            <SimulatedBadge ar={ar} />
+          </div>
+          <p className="text-xs text-[var(--muted)]">
+            {ar
+              ? "هذه الأزرار ترسل حزمة إحالة محدودة إلى نقطة تجريبية لا تحفظ شيئًا ولا تصل إلى عيادة حقيقية، بعد موافقتك."
+              : "These buttons send a minimum-necessary referral packet to a mock endpoint that stores nothing and reaches no real clinic, after your opt-in."}
+          </p>
           <div className={`grid gap-2 ${specialistEligible ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
             {tiles.map((t) => (
               <button

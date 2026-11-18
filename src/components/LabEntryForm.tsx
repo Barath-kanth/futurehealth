@@ -9,6 +9,7 @@ import {
   type LabParse,
   type TestosteroneUnit,
 } from "@/lib/lab-units";
+import { Sensitive } from "@/components/Sensitive";
 import { useSeedShield } from "@/lib/store";
 import Link from "next/link";
 import { useState } from "react";
@@ -251,7 +252,7 @@ export function LabEntryForm() {
             {savedNote && (
               <span className="text-xs text-[var(--muted)]">
                 {ar ? "حُفظت: " : "Saved: "}
-                {savedNote}
+                <Sensitive>{savedNote}</Sensitive>
               </span>
             )}
           </div>

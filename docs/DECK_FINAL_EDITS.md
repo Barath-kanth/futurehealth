@@ -1,5 +1,7 @@
 # Deck final edits (paste into the Google Slides / PowerPoint source)
 
+Updated for the real, self-arranged referral step (video link, calendar reminders, approved summary) and discreet mode.
+
 Based on the exported `SeedShield.pdf` (16 pages). Page numbers are the deck's own.
 The PDF cannot be edited from the repo, so these are exact replacements.
 
@@ -41,11 +43,20 @@ Our testing (real public data, not clinical accuracy)
 
 | source | Type | Owner | Sensitivity | Permission / Personal Data? |
 | --- | --- | --- | --- | --- |
-| OpenWeatherMap API (heat, humidity, air quality) | Live public weather data, fetched by our server | OpenWeather | Low | Coordinates rounded to ~1 km, no name or health data sent; falls back to simulated values |
+| OpenWeatherMap API (heat, humidity, air quality) | Live public weather data, fetched by our server | OpenWeather | Low | Area-level, not the person's own exposure. Location is rounded to about 1 km in the browser before it leaves the device. Falls back to simulated values |
 | User-entered labs and weekly self-report | User-entered, unverified | User | High if real | Clinical/lab and self-report consent; stays in the browser, not stored by us |
+| Clinician summary and calendar file | Generated in the browser from the user's own entries | User | High if real | Created only on request; the user approves, downloads and shares it. SeedShield sends nothing. No name or contact details |
+| Jitsi Meet video room (meet.jit.si) | Free public video service; we only generate a random room link | Jitsi / 8x8 | Medium (live video) | We never see or record the call. Anyone with the link can join, so it is shared only with the user's chosen clinician |
 | NHANES 2015–2016 | Public survey and lab data | US CDC / NCHS | Low (de-identified, public domain) | Rule validation only; no re-identification attempted |
 
 Also change the row `At-home kit / lab cues` to: `At-home kit cues | Simulated | User (demo) | High if real | Opt-in consent; screening only` (labs are now user-entered, listed separately above).
+
+## Page 9 — Risks and safeguards (add two bullets)
+
+```
+● Discreet use — Discreet mode shows a neutral tab title, blurs sensitive text until tapped, and offers a quick exit. Calendar entries and file names use neutral wording ("Health check-in") so nothing sensitive appears on a shared phone. Nothing is stored in the browser.
+● Referral limits — The real next step is self-arranged: a private video link, a calendar file with reminders, and a summary the user approves and shares. SeedShield does not supply, verify or contact clinicians, and sends nothing. The simulated clinic queue is labelled Demo only.
+```
 
 ## Page 10 — Hardware (change one bullet)
 
@@ -58,17 +69,20 @@ Replace `• Environment heat / air-quality feeds` with:
 ## Page 12 — Path to pilot (add after Integration)
 
 ```
-Current limits: the referral handoff is a mock endpoint that sends a minimum-necessary packet only after opt-in; nothing is stored or forwarded. Live teleconsult and verified-specialist routing need partner agreements and are not built. No volunteer pilot has been run.
+What works today (self-arranged, no partner needed): a private video-room link, a calendar file with reminders (visit and follow-up), and a user-approved summary the person gives to a clinician they choose. SeedShield sends nothing.
+Next step, pending partnerships: verified specialist routing, partner teleconsult booking and referral tracking. These need agreements, clinician verification and data-protection review, and are not built. The simulated clinic queue in the app is labelled Demo only. No volunteer pilot has been run.
 ```
 
 ## Page 13 — Third-party materials (add one line)
 
 ```
-Third-party data and services: OpenWeatherMap API (free tier, used under its terms; source shown in the app); US CDC NHANES public-use data (public domain).
+Third-party data and services: OpenWeatherMap API (free tier, used under its terms; source shown in the app); Jitsi Meet public service for video links (used under its terms; we only generate the link); US CDC NHANES public-use data (public domain).
 ```
 
 ## Do not claim
 
 - A volunteer pilot, a verified urologist network, or a teleconsult partner (none exist).
 - Clinical accuracy from NHANES (it checks rule behaviour only).
-- "Live" referral booking (the handoff is a mock).
+- A connected referral network, verified specialists, or a partner teleconsult service (video links and summaries are self-arranged by the user; the clinic queue is a labelled demo).
+- That the heat reading is the person's own exposure (it is area-level; their own hours outdoors and shift work are self-entered).
+- That Arabic copy is clinically reviewed (it needs native-speaker and clinician review; Arabic and English only).

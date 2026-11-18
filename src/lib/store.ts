@@ -101,6 +101,8 @@ interface SeedShieldState {
   doctorAlertOptIn: boolean;
   culturalTone: "stewardship" | "direct" | "clinical";
   interactionMode: "full" | "text" | "audio";
+  /** Discreet mode: neutral tab title, sensitive text blurred until tapped. */
+  discreet: boolean;
   pairedDeviceIds: string[];
   chat: ChatMessage[];
   streams: DataStreamStatus[];
@@ -110,6 +112,9 @@ interface SeedShieldState {
   showWhatIf: boolean;
   assignedDoctor: typeof ASSIGNED_DOCTOR;
   setLocale: (locale: Locale) => void;
+  setDiscreet: (on: boolean) => void;
+  /** Adds an in-app follow-up reminder (the calendar file carries the real alarm). */
+  addCareReminder: (r: { title: string; titleAr: string; body: string; bodyAr: string }) => void;
   setDoctorAlertOptIn: (on: boolean) => void;
   setCulturalTone: (tone: "stewardship" | "direct" | "clinical") => void;
   setInteractionMode: (mode: "full" | "text" | "audio") => void;
@@ -147,6 +152,11 @@ interface SeedShieldState {
   envSource: "live" | "simulated" | null;
   /** Pull live heat + AQI for a coarse location. Requires environment consent. */
   refreshLiveEnvironment: (coords?: { lat: number; lon: number }) => Promise<void>;
+}
+
+/** Care reminders the person created; they must survive every notification rebuild. */
+function keepCareReminders(existing: AppNotification[]): AppNotification[] {
+  return existing.filter((n) => n.id.startsWith("care-reminder-"));
 }
 
 function withIndexAlerts(
@@ -204,7 +214,7 @@ function withIndexAlerts(
     previousIndex: index,
     indexBand: band,
     doctorAlerts,
-    notifications: notes.length ? notes : existingNotes,
+    notifications: notes.length ? [...notes, ...keepCareReminders(existingNotes)] : existingNotes,
   };
 }
 
@@ -273,6 +283,7 @@ function bootState() {
     doctorAlertOptIn: false,
     culturalTone: "stewardship" as const,
     interactionMode: "full" as const,
+    discreet: false,
     pairedDeviceIds: ["watch", "phone", "pc", "env", "scale"],
     ...core,
   };
@@ -303,6 +314,21 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
   ...boot,
 
   setLocale: (locale) => set({ locale }),
+  setDiscreet: (on) => set({ discreet: on }),
+  addCareReminder: (r) => {
+    const reminder: AppNotification = {
+      id: `care-reminder-${Date.now()}`,
+      title: r.title,
+      titleAr: r.titleAr,
+      body: r.body,
+      bodyAr: r.bodyAr,
+      level: "info",
+      time: "Just now",
+      read: false,
+      audience: "patient",
+    };
+    set({ notifications: [reminder, ...get().notifications].slice(0, 40) });
+  },
 
   setDoctorAlertOptIn: (on) => set({ doctorAlertOptIn: on }),
 
@@ -315,6 +341,7 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
     set({
       ...fresh,
       locale: get().locale,
+      discreet: get().discreet,
       ageVerified: get().ageVerified,
       birthYear: get().birthYear,
       doctorAlertOptIn: false,
@@ -611,7 +638,7 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
       bodyRegions: core.bodyRegions,
       actions: core.actions,
       findings: core.findings,
-      notifications: core.notifications,
+      notifications: [...core.notifications, ...keepCareReminders(get().notifications)],
       indexBand: bandForIndex(core.vitalityIndex),
     });
   },
@@ -658,9 +685,12 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
     set({
       ...core,
       indexBand: bandForIndex(core.vitalityIndex),
-      notifications: core.notifications.map((n) =>
-        doneIds.has(n.id) ? { ...n, done: true, read: true } : n,
-      ),
+      notifications: [
+        ...core.notifications.map((n) =>
+          doneIds.has(n.id) ? { ...n, done: true, read: true } : n,
+        ),
+        ...keepCareReminders(get().notifications),
+      ],
     });
   },
 

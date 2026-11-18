@@ -5,6 +5,7 @@ import { LabEntryForm } from "@/components/LabEntryForm";
 import { SelfReportForm } from "@/components/SelfReportForm";
 import { SimulatedBadge } from "@/components/SimulatedBadge";
 import { TriageBadge } from "@/components/SeverityBadge";
+import { Sensitive } from "@/components/Sensitive";
 import { CONSENT_LABELS, consentForSource } from "@/lib/signal-consent";
 import { useSeedShield } from "@/lib/store";
 import type { TriageTier } from "@/lib/types";
@@ -95,6 +96,7 @@ export default function TriagePage() {
         consent: CONSENT_LABELS[cat],
         agreed: consents[cat],
         drivers: s.drivers.slice(0, 2),
+        explanation: ar ? s.explanationAr : s.explanation,
       };
     });
   }, [assessment.signals, consents, ar]);
@@ -209,16 +211,18 @@ export default function TriagePage() {
       <div className="rounded-2xl border border-[var(--cedar)] bg-[var(--cedar)] p-6 text-[var(--mist)]">
         <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--brass)]">
           <span>{ar ? "خطوتك الآن (حية)" : "Your step now (live)"}</span>
-          <TriageBadge tier={t.tier} />
+          <Sensitive>
+            <TriageBadge tier={t.tier} />
+          </Sensitive>
         </div>
         <div className="mt-3 font-display text-3xl leading-tight">
-          {ar ? activePath.ar : activePath.en}
+          <Sensitive>{ar ? activePath.ar : activePath.en}</Sensitive>
         </div>
         <p className="mt-3 text-sm text-[var(--mist)]/85">
-          {ar ? t.rationaleAr : t.rationale}
+          <Sensitive>{ar ? t.rationaleAr : t.rationale}</Sensitive>
         </p>
         <p className="mt-2 text-sm text-[var(--mist)]/75">
-          {ar ? activePath.detailAr : activePath.detail}
+          <Sensitive>{ar ? activePath.detailAr : activePath.detail}</Sensitive>
         </p>
         {t.requiresHumanReview && (
           <p className="mt-4 rounded-lg bg-[var(--mist)]/10 px-3 py-2 text-xs">
@@ -282,13 +286,19 @@ export default function TriagePage() {
               key={s.id}
               className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[var(--line)]/60 pb-2"
             >
-              <span>
-                {s.title}
-                {s.drivers[0] ? (
-                  <span className="ms-2 text-xs text-[var(--muted)]">
-                    ({s.drivers.join(", ")})
-                  </span>
-                ) : null}
+              <span className="min-w-0 flex-1">
+                <Sensitive>
+                  {s.title}
+                  {s.drivers[0] ? (
+                    <span className="ms-2 text-xs text-[var(--muted)]">
+                      ({s.drivers.join(", ")})
+                    </span>
+                  ) : null}
+                </Sensitive>
+                <span className="mt-1 block text-xs text-[var(--muted)]">
+                  <span className="font-medium">{ar ? "لماذا ظهرت: " : "Why this appeared: "}</span>
+                  <Sensitive>{s.explanation}</Sensitive>
+                </span>
               </span>
               <span
                 className={

@@ -100,7 +100,7 @@ Optional simulated watch / home kit — **no physical hardware required for demo
 3. Consented EHR category pulls (not chart dumps)  
 4. Keep Simulated tags until validation partners  
 5. Cost: Cloud Run min-instances → 0 after demos; Firestore not Cloud SQL  
-6. Referral handoff today is a mock endpoint with a minimum-necessary packet. Live teleconsult and verified-specialist routing need partner agreements and are not built.
+6. Works today without partners: a private video-room link, a calendar file with visit and follow-up reminders, and a user-approved clinician summary the person shares themselves. Next step, pending partnerships: verified specialist routing and partner teleconsult booking. The in-app clinic queue is a labelled mock.
 
 ---
 
