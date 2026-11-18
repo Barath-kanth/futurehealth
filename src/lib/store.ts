@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { evaluateRisk, mergeVariables } from "./risk-engine";
+import { DEFAULT_COORDS as DEFAULT_ENV_COORDS } from "./env-live";
 import { getPersona } from "./personas";
 import { ME, ASSIGNED_DOCTOR, PAIRABLE_DEVICES } from "./me-profile";
 import { getScenario } from "./scenarios";
@@ -142,6 +143,10 @@ interface SeedShieldState {
   simulateSuddenPain: () => void;
   /** Demo: sparse file → insufficient_info (asks for more data). */
   simulateThinData: () => void;
+  /** Where the environment values came from (live API vs simulated feed). */
+  envSource: "live" | "simulated" | null;
+  /** Pull live heat + AQI for a coarse location. Requires environment consent. */
+  refreshLiveEnvironment: (coords?: { lat: number; lon: number }) => Promise<void>;
 }
 
 function withIndexAlerts(
@@ -282,6 +287,7 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
   scenarioId: "baseline",
   explanation: null,
   explanationProvider: null,
+  envSource: null,
   autoMode: true,
   watchLive: true,
   showWhatIf: false,
@@ -861,5 +867,37 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
       moneyStress: 20,
       businessStress: 15,
     });
+  },
+
+  refreshLiveEnvironment: async (coords) => {
+    if (!get().consents.environment) {
+      set({ envSource: "simulated" });
+      return;
+    }
+    const target = coords ?? DEFAULT_ENV_COORDS;
+    try {
+      const res = await fetch(
+        `/api/env?lat=${target.lat}&lon=${target.lon}`,
+        { cache: "no-store" },
+      );
+      const data = (await res.json()) as {
+        source: "live" | "simulated";
+        heatIndexC?: number;
+        aqi?: number;
+        humidityPct?: number;
+      };
+      if (data.source === "live" && data.heatIndexC !== undefined) {
+        get().patchVariables({
+          heatIndexC: data.heatIndexC,
+          aqi: data.aqi ?? get().variables.aqi,
+          humidityPct: data.humidityPct ?? get().variables.humidityPct,
+        });
+        set({ envSource: "live" });
+      } else {
+        set({ envSource: "simulated" });
+      }
+    } catch {
+      set({ envSource: "simulated" });
+    }
   },
 }));

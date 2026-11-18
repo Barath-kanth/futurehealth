@@ -7,7 +7,7 @@ Architecture diagram detail: `docs/ARCHITECTURE.md` · Live: https://seedshield-
 
 ## Slide 1 — Team / problem
 
-**Team name:** SeedShield (or your registered name)  
+**Team name:** Men need (as registered on the Hack2skill portal; deck page 1 must match)  
 **Problem statement (short):**  
 Men in the Gulf lack a private, early, trusted path for male reproductive **health screening** before crisis. Heat, work, sleep, and stigma delay care. SeedShield is a consent-first front door: Safe Triage + quiet early warning — **screening ≠ diagnosis**.
 
@@ -54,7 +54,10 @@ Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Fires
 | --- | --- | --- | --- | --- |
 | Demo persona Omar | Synthetic | SeedShield authors | Low | Created for challenge |
 | ~500 synthetic cohort | Synthetic | SeedShield authors | Low | Author-built |
-| Env heat/AQI (demo) | Simulated / consented feed | User consent | Medium | Vault opt-in |
+| Live heat + AQI (OpenWeatherMap, when key set) | Public API, live | OpenWeatherMap | Low (coarse ~1 km location) | Environment consent; falls back to simulated feed |
+| Env heat/AQI (simulated fallback) | Simulated | SeedShield | Medium | Vault opt-in |
+| Self-report form (shifts, heat hours, sitting, stress) | User-entered | User | Medium | Self-report consent; stays in browser |
+| Referral packet (mock) | Minimum-necessary fields only | SeedShield | Low | Explicit opt-in; mock endpoint, nothing stored or forwarded |
 | Wearable streams | Simulated | User consent | Medium | Vault opt-in |
 | Curated research stubs | Public literature pointers | Public | Low | Attribution in Radar |
 | No real PHI on servers | — | — | — | Browser demo + synthetic persist |

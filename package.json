@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:triage": "npx --yes tsx scripts/run-triage-safety.ts",
+    "test:submission": "npx --yes tsx scripts/run-submission-checks.ts",
     "deploy:gcp": "bash scripts/deploy-gcp.sh"
   },
   "dependencies": {

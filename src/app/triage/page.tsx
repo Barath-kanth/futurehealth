@@ -1,6 +1,7 @@
 "use client";
 
 import { CareAccessPanel } from "@/components/CareAccessPanel";
+import { SelfReportForm } from "@/components/SelfReportForm";
 import { SimulatedBadge } from "@/components/SimulatedBadge";
 import { TriageBadge } from "@/components/SeverityBadge";
 import { CONSENT_LABELS, consentForSource } from "@/lib/signal-consent";
@@ -162,6 +163,8 @@ export default function TriagePage() {
           ))}
         </div>
       )}
+
+      <SelfReportForm />
 
       <section className="rounded-2xl border border-dashed border-[var(--line)] bg-[var(--mist)] p-4">
         <div className="flex flex-wrap items-center gap-2">
