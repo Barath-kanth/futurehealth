@@ -173,3 +173,29 @@ Acute scrotum (sudden testicular pain goes to urgent care): EAU Guidelines on Pa
 
 - The Department of Health link on the care step: the site refused connections from my machine, so please click it yourself.
 - Clinician review, native Arabic review and any pilot: none has happened. Keep "requested" and "planned".
+
+---
+
+## Gemini analytics (verified live on 18 Nov 2026)
+
+Gemini on Vertex AI is now running in the public deployment: model `gemini-3.8-flash`, global endpoint, Cloud Run service identity (no key file). The old default `gemini-2.0-flash-001` was retired, which is why it was off before.
+
+What I confirmed against the live site:
+
+| Feature | Result |
+| --- | --- |
+| Gemini foresight (`/api/gemini-agent`) | available, provider `vertex-ai`, model `gemini-3.8-flash` |
+| Explanations (`/api/explain`) | `vertex-ai`, paraphrased from the rule engine's own text |
+| Radar research (Watch cycle) | `vertex-ai+google-search:gemini-3.8-flash`, real Google Search grounding, real source links |
+| Investigate chain text | uses Gemini when its reply passes the safety filter (it drops replies that mention diagnosis, infertility or prescribing), otherwise keeps the rule-based text |
+| Triage tier | unchanged by Gemini: still decided only by the rule engine |
+
+Wording for the slides (pages 3, 7 and the diagram):
+
+> **Advanced analytics run on Gemini (Vertex AI, `gemini-3.8-flash`):** multi-factor foresight, plain-language explanations, and Google-Search-grounded research for the early-warning agents. Triage itself stays rule-based, and Gemini cannot change the pathway. If Gemini is unavailable, the foresight feature shows "unavailable"; no simulated output is shown.
+
+Diagram label: "Vertex Gemini: advanced analytics (rules still decide triage)". Drop the word "Optional".
+
+Why Gemini is not used to decide triage: a model's output can't be audited by a clinician the way fixed rules can, and the whole safety story ("AI cannot override triage") depends on this. Keep that sentence.
+
+Note for page 9: Watch-cycle values (including any self-entered labs) are now also sent to Google's Vertex AI inside the Gemini prompts. The rule-engine summary and finding titles go in, not names. Say so in the privacy bullet.
