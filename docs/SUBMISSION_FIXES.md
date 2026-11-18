@@ -198,4 +198,4 @@ Diagram label: "Vertex Gemini: advanced analytics (rules still decide triage)". 
 
 Why Gemini is not used to decide triage: a model's output can't be audited by a clinician the way fixed rules can, and the whole safety story ("AI cannot override triage") depends on this. Keep that sentence.
 
-Note for page 9: Watch-cycle values (including any self-entered labs) are now also sent to Google's Vertex AI inside the Gemini prompts. The rule-engine summary and finding titles go in, not names. Say so in the privacy bullet.
+Note for page 9 (important): the Gemini foresight prompt includes each signal's drivers, which can contain entered lab values (for example `testosterone=250`, `glucose=...`, `sdf=...`), plus a lifestyle snapshot (heat index, air quality, sleep, stress, shift work, smoking, alcohol, BMI, hydration). No name, contact detail or account is sent. So say in the privacy bullet: "When the optional Gemini analytics run, the person's consented values are sent to Google Vertex AI to produce the analysis; nothing identifying is included." Do not say lab values never leave the browser.
