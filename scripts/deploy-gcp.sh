@@ -8,10 +8,11 @@ REGION="${GCP_REGION:-us-central1}"
 SERVICE="${CLOUD_RUN_SERVICE:-seedshield-agents}"
 DATASET="${BQ_DATASET:-seedshield_events}"
 SECRET="${AGENT_SCHEDULER_SECRET:-seedshield-scheduler-demo}"
-# Zero-cost defaults: Gemini (billed per token) off, agent events kept in memory instead of
-# Firestore/BigQuery. Turn on with GEMINI_ENABLED=true AGENT_PERSIST=gcp.
+# Gemini (billed per token) is off by default; turn on with GEMINI_ENABLED=true.
+# AGENT_PERSIST=gcp writes to Firestore + BigQuery; use "memory" to skip storage.
+# OPENWEATHER_API_KEY is only sent when set, so an existing value on Cloud Run is kept.
 GEMINI_ENABLED="${GEMINI_ENABLED:-false}"
-AGENT_PERSIST="${AGENT_PERSIST:-memory}"
+AGENT_PERSIST="${AGENT_PERSIST:-gcp}"
 
 echo "==> Project $PROJECT / region $REGION"
 

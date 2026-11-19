@@ -16,7 +16,7 @@ export function geminiEnabled(): boolean {
 }
 
 export const GEMINI_OFF_REASON =
-  "Gemini is switched off in this public demo to keep cloud cost at zero. Deterministic triage still works; this feature turns on with GEMINI_ENABLED=true.";
+  "Gemini is switched off in this public demo to control cloud cost. Deterministic triage still works; this feature turns on with GEMINI_ENABLED=true.";
 
 /**
  * Gemini 3.x models on Vertex AI are served from the "global" location.
