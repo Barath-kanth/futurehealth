@@ -10,7 +10,7 @@ Use the live site: https://seedshield-agents-gmv4iqwxgq-uc.a.run.app. Record on 
 | 0:50 | "My lab results" | "I type my own lab values, in either unit. A wrong unit is rejected." Enter 540 as nmol/L to show the error, then 250 ng/dL. |
 | 1:10 | Result and "Why this appeared" | "One low reading goes to primary care with a repeat test, not a specialist. Every signal says why it appeared and which consent it uses." |
 | 1:30 | Add a repeat of 260 | "Two low readings open specialist review, and a human must review it." |
-| 1:45 | "Care access" panel | "Today I can check my clinician's licence with the regulator, create a private video link, download a calendar file with reminders, and create a summary I approve myself." |
+| 1:45 | "Care access" panel | "Today I can find the regulator's directory and ask my clinician for their licence number and certificate, create a private video link, download a calendar file with reminders, and create a summary I approve myself." |
 | 2:10 | Download calendar and summary | "Calendar entries use neutral words. The summary has no name and only the values I tick." |
 | 2:25 | **Discreet** then **العربية** | "Discreet mode blurs sensitive text and gives a quick exit. The app also works in Arabic." |
 | 2:40 | "Demo only" tiles | "The clinic queue here is a labelled demo. Verified specialist routing is the next step, pending partnerships." |
