@@ -22,7 +22,7 @@ export default function AnalystPage() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--brass-deep)]">
-            {ar ? "ملفك · عمر ٣٤ (عرض)" : "Your file · Omar 34 (demo)"}
+            {ar ? "ملفك · طارق ٣٤ (عرض)" : "Your file · Tariq 34 (demo)"}
           </p>
           <h1 className="mt-2 font-display text-4xl text-[var(--cedar)] md:text-5xl">
             {ar ? "ملفي الصحي" : "My health file"}

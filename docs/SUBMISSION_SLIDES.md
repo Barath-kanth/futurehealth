@@ -24,7 +24,7 @@ Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Fires
 
 ## Slide 5 — Target users and intended outcome *
 
-**Users:** Adult men 18+ in UAE/Gulf (demo persona Omar, 34); clinicians/reviewers via Analytics.  
+**Users:** Adult men 18+ in UAE/Gulf (demo persona Tariq, 34); clinicians/reviewers via Analytics.  
 **Outcome:** Earlier, consented next-step guidance (self-care → primary → specialty gated → urgent) with opt-in doctor notify/booking — without diagnosing or auto-fertility referral.
 
 ---
@@ -53,7 +53,7 @@ Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Fires
 
 | Source | Type | Owner | Sensitivity | Permission |
 | --- | --- | --- | --- | --- |
-| Demo persona Omar | Synthetic | SeedShield authors | Low | Created for challenge |
+| Demo persona Tariq | Synthetic | SeedShield authors | Low | Created for challenge |
 | ~500 synthetic cohort | Synthetic | SeedShield authors | Low | Author-built |
 | Live heat + AQI (OpenWeatherMap, when key set) | Public API, live | OpenWeatherMap | Low (coarse ~1 km location) | Environment consent; falls back to simulated feed |
 | Env heat/AQI (simulated fallback) | Simulated | SeedShield | Medium | Vault opt-in |

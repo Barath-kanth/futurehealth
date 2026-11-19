@@ -22,8 +22,8 @@ export default function ActionsPage() {
         </p>
         <p className="mt-1 text-xs text-[var(--muted)]">
           {ar
-            ? "شخصية العرض: عمر، ٣٤. الحجز/الطبيب محاكاة."
-            : "Demo persona: Omar, 34. Booking / doctor are simulated."}
+            ? "شخصية العرض: طارق، ٣٤. الحجز/الطبيب محاكاة."
+            : "Demo persona: Tariq, 34. Booking / doctor are simulated."}
         </p>
       </header>
 

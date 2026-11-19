@@ -88,7 +88,7 @@ Add or replace these rows:
 
 | Source | Type | Owner | Sensitivity | Permission / personal data? |
 | --- | --- | --- | --- | --- |
-| Demo persona (Omar) | Synthetic | Authors | Low | Not real personal data |
+| Demo persona (Tariq) | Synthetic | Authors | Low | Not real personal data |
 | ~500 synthetic cohort | Synthetic | Authors | Low | Not real PHI |
 | Self-entered labs (testosterone, optional repeat, fasting glucose) | User-entered | The user | High | Only when clinical-lab consent is on; unit checks; not saved in the browser; see page 9 for what the server sees |
 | Shift and lifestyle answers | User-entered | The user | Medium to high | Only when self-report consent is on |
@@ -136,7 +136,7 @@ Production path: partner-validated devices under clinical oversight.
 No account login is required.
 1) Open https://seedshield-agents-gmv4iqwxgq-uc.a.run.app/
 2) Pass the age gate (18+).
-3) Continue; the demo persona Omar is pre-loaded.
+3) Continue; the demo persona Tariq is pre-loaded.
 Where to find the new features:
 • Lab form: Privacy page, switch on "Clinical & laboratory category pulls"; then the Next step page, "My lab results". Try 250 ng/dL, then add a repeat of 260. Type 540 as nmol/L to see the unit check.
 • Care step: Next step page, "Care access" (video link, calendar file with reminders, approved summary).

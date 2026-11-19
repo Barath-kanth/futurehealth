@@ -385,7 +385,7 @@ export const useSeedShield = create<SeedShieldState>((set, get) => ({
       };
     }
     set({ ageVerified: true, birthYear });
-    return { ok: true, message: "Welcome — demo persona Omar (34) is ready." };
+    return { ok: true, message: "Welcome — demo persona Tariq (34) is ready." };
   },
 
   setScenario: (id) => {

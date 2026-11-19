@@ -140,8 +140,8 @@ export default function TriagePage() {
         </p>
         <p className="mt-1 text-sm text-[var(--muted)]">
           {ar
-            ? `شخصية العرض: عمر، ٣٤ · محدّث ${evaluatedAt} · مؤشر ${vitalityIndex}`
-            : `Demo persona: Omar, 34 · updated ${evaluatedAt} · index ${vitalityIndex}`}
+            ? `شخصية العرض: طارق، ٣٤ · محدّث ${evaluatedAt} · مؤشر ${vitalityIndex}`
+            : `Demo persona: Tariq, 34 · updated ${evaluatedAt} · index ${vitalityIndex}`}
           {watchLive ? (ar ? " · مراقبة حية" : " · live watch") : null}
           <span className="sr-only">{tick}</span>
         </p>
@@ -181,8 +181,8 @@ export default function TriagePage() {
         </div>
         <p className="mt-1 text-xs text-[var(--muted)]">
           {ar
-            ? "جرّب مسارين للسلامة، ثم أعد عمر."
-            : "Try two safety paths, then restore Omar."}
+            ? "جرّب مسارين للسلامة، ثم أعد طارق."
+            : "Try two safety paths, then restore Tariq."}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
@@ -204,7 +204,7 @@ export default function TriagePage() {
             onClick={() => resetDemoData()}
             className="rounded-md border border-[var(--line)] px-3 py-2 text-xs text-[var(--muted)]"
           >
-            {ar ? "إعادة عمر" : "Restore Omar"}
+            {ar ? "إعادة طارق" : "Restore Tariq"}
           </button>
         </div>
       </section>

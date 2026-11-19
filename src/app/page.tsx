@@ -18,8 +18,8 @@ export default function HomePage() {
             </h1>
             <p className="mt-3 text-xs text-[var(--muted)]">
               {ar
-                ? "شخصية العرض: عمر، ٣٤ — بيانات تجريبية مسبقة التحميل"
-                : "Demo persona: Omar, 34 — pre-loaded synthetic data"}
+                ? "شخصية العرض: طارق، ٣٤ — بيانات تجريبية مسبقة التحميل"
+                : "Demo persona: Tariq, 34 — pre-loaded synthetic data"}
             </p>
             <p className="mt-5 max-w-lg text-lg text-[var(--ink)]/85">
               {ar
@@ -68,8 +68,8 @@ export default function HomePage() {
             </div>
             <p className="mt-2 text-[11px] text-[var(--mist)]/70">
               {ar
-                ? "مبني على عرض عمر (٣٤) — ليس إدخالًا فارغًا"
-                : "Based on demo persona Omar (34) — not a blank intake"}
+                ? "مبني على عرض طارق (٣٤) — ليس إدخالًا فارغًا"
+                : "Based on demo persona Tariq (34) — not a blank intake"}
             </p>
             <div className="mt-4 font-display text-3xl leading-tight">
               {ar ? assessment.triage.labelAr : assessment.triage.label}

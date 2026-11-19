@@ -1,6 +1,6 @@
 # Demo video script (under 3 minutes) — what is real, shown honestly
 
-Use the live site: https://seedshield-agents-gmv4iqwxgq-uc.a.run.app. Record on a phone-sized window if you can. Say "demo persona" when you show Omar.
+Use the live site: https://seedshield-agents-gmv4iqwxgq-uc.a.run.app. Record on a phone-sized window if you can. Say "demo persona" when you show Tariq.
 
 | Time | Screen | Say |
 | --- | --- | --- |

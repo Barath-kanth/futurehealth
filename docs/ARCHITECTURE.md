@@ -89,7 +89,7 @@ Age gate (18+) → Consent vault → Consented signals
 3. Safe Triage emits pathway + red flags (human review gate for specialty/fertility).  
 4. Quiet watch agents run on schedule or on page open; doctor notify / booking need **explicit opt-in**.  
 5. Persist cycle summary to Firestore + BigQuery when `AGENT_PERSIST=gcp`.  
-6. No real patient PHI; demo persona **Omar, 34** + synthetic cohort for metrics.
+6. No real patient PHI; demo persona **Tariq, 34** + synthetic cohort for metrics.
 
 ---
 

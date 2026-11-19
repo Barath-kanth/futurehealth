@@ -29,7 +29,7 @@ export function ProfileSnapshot() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--brass)]">
-            {ar ? "عرض · عمر ٣٤ · ١٨+" : "Demo · Omar 34 · 18+"}
+            {ar ? "عرض · طارق ٣٤ · ١٨+" : "Demo · Tariq 34 · 18+"}
           </p>
           <h2 className="mt-1 font-display text-3xl">
             {ar ? ME.nameAr : ME.name}

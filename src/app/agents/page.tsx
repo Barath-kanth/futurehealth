@@ -190,8 +190,8 @@ export default function WatchPage() {
         </p>
         <p className="mt-2 text-xs text-[var(--muted)]">
           {ar
-            ? `شخصية العرض: عمر، ٣٤ · تذكيرات الجرس: ${reminderUnread} · الفرز لا يتغيّر بالمراقبة`
-            : `Demo persona: Omar, 34 · Bell reminders: ${reminderUnread} · Watch cannot override triage`}
+            ? `شخصية العرض: طارق، ٣٤ · تذكيرات الجرس: ${reminderUnread} · الفرز لا يتغيّر بالمراقبة`
+            : `Demo persona: Tariq, 34 · Bell reminders: ${reminderUnread} · Watch cannot override triage`}
         </p>
         <p className="mt-2 text-sm text-[var(--cedar)]">
           {ar ? "خطوتك:" : "Your step:"}{" "}
@@ -260,8 +260,8 @@ export default function WatchPage() {
               ? `آخر فحص: ${new Date(lastRun).toLocaleString()}`
               : `Last check: ${new Date(lastRun).toLocaleString()}`
             : ar
-              ? "نتيجة أولية من ملف عمر"
-              : "Initial result from Omar’s file"}
+              ? "نتيجة أولية من ملف طارق"
+              : "Initial result from Tariq’s file"}
         </p>
         <button
           type="button"

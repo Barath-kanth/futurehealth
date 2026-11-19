@@ -149,7 +149,7 @@ function fakeAssessment(tier: TriageTier, signals: { id: string; severity: strin
   check("valid packet passes sanitizer", sanitizeReferralPacket(good).ok);
   check(
     "packet with a name field is rejected",
-    !sanitizeReferralPacket({ ...good, name: "Omar Ali" }).ok,
+    !sanitizeReferralPacket({ ...good, name: "Tariq Ali" }).ok,
   );
   check(
     "packet with chat text is rejected",
@@ -165,7 +165,7 @@ function fakeAssessment(tier: TriageTier, signals: { id: string; severity: strin
   );
   check(
     "reason code containing a name is rejected",
-    !sanitizeReferralPacket({ ...good, reasonCodes: ["Omar Ali"] }).ok,
+    !sanitizeReferralPacket({ ...good, reasonCodes: ["Tariq Ali"] }).ok,
   );
   check(
     "reason code with uppercase is rejected",

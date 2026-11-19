@@ -6,8 +6,8 @@ const extras = defaultExtras();
 /** Pre-loaded demo persona for judges — not a real patient. */
 export const ME: Persona = {
   id: "me",
-  name: "Omar",
-  nameAr: "عمر",
+  name: "Tariq",
+  nameAr: "طارق",
   age: 34,
   nationality: "UAE resident",
   maritalStatus: "prefer_not_to_say",
