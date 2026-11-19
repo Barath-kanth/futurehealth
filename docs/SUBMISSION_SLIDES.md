@@ -1,7 +1,7 @@
 # Future Health submission — slide fill-in (from official template)
 
 Use with: `[PUB] Future Health Digital Innovation Challenge _ Submission Template.pptx`  
-Architecture diagram detail: `docs/ARCHITECTURE.md` · Live: https://seedshield-agents-fpger4i3jq-uc.a.run.app
+Architecture diagram detail: `docs/ARCHITECTURE.md` · Live: https://seedshield-agents-gmv4iqwxgq-uc.a.run.app
 
 ---
 

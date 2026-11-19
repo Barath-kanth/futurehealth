@@ -1,7 +1,7 @@
 # SeedShield — Architecture (submission slide)
 
 **Product:** SeedShield · Male Vitality & Legacy Guardian  
-**Live demo:** https://seedshield-agents-fpger4i3jq-uc.a.run.app  
+**Live demo:** https://seedshield-agents-gmv4iqwxgq-uc.a.run.app  
 **GCP project:** `futurehealth-514508` · region `us-central1`  
 **Principle:** Deterministic **Safe Triage** is the safety floor. Multi-agent early warning **reads** triage and **cannot override** it. Screening ≠ diagnosis.
 
@@ -97,7 +97,7 @@ Age gate (18+) → Consent vault → Consented signals
 
 - Screening ≠ diagnosis; no medication start/stop advice.  
 - Agents **cannot** change locked triage tier (safety test included).  
-- AI screening guide (Gemini): fixed rules answer diagnosis Q, meds Q, sudden pain → urgent and self-harm → crisis redirect before any model runs; Gemini answers everything else from the consent-filtered screening file; an output guard drops diagnosis, dose and outcome claims and falls back to rules.  
+- AI screening guide (Gemini; off in the public demo via `GEMINI_ENABLED=false`, so the rule-based replies run): fixed rules answer diagnosis Q, meds Q, sudden pain → urgent and self-harm → crisis redirect before any model runs; Gemini answers everything else from the consent-filtered screening file; an output guard drops diagnosis, dose and outcome claims and falls back to rules.  
 - `npm run test:triage` → 23/23.  
 - `/boundaries` = what we don’t do.
 

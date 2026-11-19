@@ -31,8 +31,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Live agent platform (GCP)
 
-- **Cloud Run:** https://seedshield-agents-fpger4i3jq-uc.a.run.app  
-- **Agents UI:** https://seedshield-agents-fpger4i3jq-uc.a.run.app/agents  
+- **Cloud Run:** https://seedshield-agents-gmv4iqwxgq-uc.a.run.app  
+- **Agents UI:** https://seedshield-agents-gmv4iqwxgq-uc.a.run.app/agents  
 - **Deploy / update:** `npm run deploy:gcp` (project `futurehealth-514508`)  
 - Flow: Setup → Radar → Ingest → Monitor → Investigate → Notify → Care  
 - Persist: Firestore + BigQuery (`seedshield_events`); Scheduler every 6h  

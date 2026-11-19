@@ -28,8 +28,8 @@ Team size stays 2.
 Men need is a 2-person team. Barathakanthan (lead): DevOps and cloud engineer working with AI. Kogileshwaran: AI developer. We built and deployed SeedShield, a working prototype.
 Capabilities:
 • Full-stack: Next.js consent vault, Safe Triage, lab-entry form, live area heat and air quality, self-arranged care step (video link, calendar reminders, approved summary), discreet mode, English and Arabic.
-• Google Cloud: Cloud Run, Scheduler, Firestore, BigQuery, optional Vertex AI Gemini.
-• Safety: deterministic triage AI cannot override; consent filter first; screening, not diagnosis; 23 triage cases, 91 automated checks.
+• Google Cloud: Cloud Run and Scheduler live; Vertex AI Gemini, Firestore and BigQuery built and tested, off in the public demo for zero cost.
+• Safety: deterministic triage AI cannot override; consent filter first; screening, not diagnosis; 23 triage cases, 104 automated checks.
 • Evidence: cues follow WHO and AUA/ASRM guidance; rules also run on 1,726 men in public NHANES data (rule check, not accuracy). Clinical review requested, not received.
 • Data: demo persona is synthetic; users can type their own labs and shift answers; heat and air quality are live for the area. No patient records.
 ```
@@ -41,7 +41,7 @@ The Lucid link is an edit link. In Lucidchart: Share, then "Anyone with the link
 - Browser: consent vault, lab-entry form (unit checks), Safe Triage and consent filter, discreet mode, English/Arabic.
 - Browser to our `/api/env` (coordinates rounded to 2 decimals) to OpenWeatherMap (key stays on the server).
 - Care step, all in the browser: private video link (Jitsi Meet), calendar file, user-approved summary the person shares themselves.
-- Optional Watch cycle: browser to Cloud Run agents to Firestore and BigQuery.
+- Watch cycle: browser to Cloud Run (7 agents). Draw Vertex AI Gemini, Firestore and BigQuery as dashed boxes labelled "built, off in public demo (cost)".
 - Offline: NHANES rule check (public CDC data).
 - Future (dashed): partner clinic and verified specialist routing.
 
@@ -98,17 +98,17 @@ Add or replace these rows:
 | Calendar file and summary | Generated in the browser | The user | Medium | Downloaded by the person; neutral titles; nothing sent by us |
 | Wearable streams, at-home kit values | Simulated | Authors | Medium if real | Labelled Simulated until a validated device exists |
 | Research stubs (Radar) | Public literature pointers | Public | Low | In-app attribution |
-| Agent logs (Firestore/BigQuery) | Findings metadata | SeedShield / GCP | Low to medium | See page 9; findings can contain some entered values |
+| Agent findings | Kept in server memory only (Firestore/BigQuery off in the public demo) | SeedShield / GCP | Low | See page 9; findings can contain some entered values and are lost when the server restarts |
 
 ## Page 9: Risks and safeguards
 
-**Do not write "No real PHI collected or stored".** I checked the code and it is no longer true for the optional Watch cycle. Triage itself runs in the browser and nothing is saved in browser storage. But the Watch page sends the person's values to our Cloud Run server, and the agents write findings to Firestore and BigQuery. Those findings can include some entered values (for example sleep hours, heat hours, and sperm DNA fragmentation percentage). They are stored under a pseudonymous member id, with no name and no account.
+**Do not write "No real PHI collected or stored".** In the current public deployment (zero-cost mode, 19 Nov 2026): triage runs in the browser and nothing is saved in browser storage. The Watch page sends the person's consented values to our Cloud Run server. The agents' findings (which can include some entered values, such as sleep hours, heat hours or SDF %) are kept only in server memory and are lost when the server scales down. Firestore, BigQuery and Gemini are switched off, so nothing is written to a database and nothing is sent to Vertex AI. Cloud Run request logs keep the IP address and the coordinates rounded to 2 decimals (about 1 km).
 
 Use this instead:
 
 ```
-● Privacy: granular consent; sharing off by default; summaries and bookings only after opt-in. Self-entered values are not saved in the browser. Triage runs in the browser. If the person opens the optional Watch page, values for the consented categories are sent to our Cloud Run server, and finding summaries (which can include some entered values) are stored in Firestore and BigQuery under a pseudonymous id, with no name and no account. This is a prototype; real patient use needs a UAE health-data review first.
-● Security: HTTPS via Cloud Run; no accounts; the OpenWeatherMap key stays on the server; browser coordinates are rounded before being sent.
+● Privacy: granular consent; sharing off by default; summaries and bookings only after opt-in. Triage runs in the browser and self-entered values are not saved there. The optional Watch page sends consented values to our Cloud Run server; in the public demo, results are held only in server memory, with no database, no name and no account. Request logs keep an IP address and a location rounded to about 1 km. Prototype only; real patient use needs a UAE health-data review first.
+● Security: HTTPS via Cloud Run; no accounts; the OpenWeatherMap key stays on the server; browser coordinates are rounded before being sent; per-client rate limit on the agent endpoint.
 ● Unit mix-ups: values are checked for plausibility and units (for example 540 nmol/L is rejected), with the conversion shown.
 ● Single low reading: never treated as a diagnosis. It sends the person to primary care for a repeat early-morning test; only a confirmed low reading, or another cue, opens specialist review.
 ● Link sharing: the video link is a public Jitsi room with a random name. Anyone with the link can join, so the person should share it only with their clinician.
@@ -134,7 +134,7 @@ Production path: partner-validated devices under clinical oversight.
 
 ```
 No account login is required.
-1) Open https://seedshield-agents-fpger4i3jq-uc.a.run.app/
+1) Open https://seedshield-agents-gmv4iqwxgq-uc.a.run.app/
 2) Pass the age gate (18+).
 3) Continue; the demo persona Omar is pre-loaded.
 Where to find the new features:
@@ -149,7 +149,7 @@ Where to find the new features:
 Replace the Integration line and add one line:
 
 ```
-Integration: start with consented self-entered inputs and live area data; add category-level EHR/lab pulls (not full chart dumps); keep Cloud Run + Firestore/BQ; Vertex Gemini.
+Integration: start with consented self-entered inputs and live area data; add category-level EHR/lab pulls (not full chart dumps); keep Cloud Run; switch on Firestore/BigQuery and Vertex AI Gemini (built and tested, off in the public demo).
 Referral: today the care step is self-arranged (private video link, calendar reminders, a summary the person approves and shares). Verified specialist and teleconsult routing is the next step and needs partner agreements and a clinician-verification process. The in-app clinic queue is labelled Demo only.
 ```
 
@@ -176,13 +176,15 @@ Acute scrotum (sudden testicular pain goes to urgent care): EAU Guidelines on Pa
 
 ---
 
-## Gemini (verified live on 18 Nov 2026)
+## Gemini (built and verified live on 18 Nov 2026; off in the public demo since 19 Nov)
 
-Gemini on Vertex AI runs in the public deployment, using the Cloud Run service identity (no key file) and the global endpoint. The old default `gemini-2.0-flash-001` is retired, which is why it was off before.
+**Current status:** to keep cloud cost at zero, the public demo runs with `GEMINI_ENABLED=false`. Every Gemini feature falls back to its rule-based path, and each screen says so (chat replies are labelled "Rule-based reply"; the Studio foresight panel says Gemini is switched off). Turning it back on is one setting on Cloud Run, with no code change. The table below is what we measured when it was on.
+
+Gemini on Vertex AI used the Cloud Run service identity (no key file) and the global endpoint.
 
 Two models, chosen by measured speed: `gemini-3.1-flash-lite` (about 2-5 seconds) for interactive features, and `gemini-3.8-flash` (6 to 45 seconds, varies) for the deep foresight analysis.
 
-| Feature | Model | Result on the live site |
+| Feature | Model | Result on the live site (18 Nov) |
 | --- | --- | --- |
 | AI screening guide chat (`/chat`) | 3.1-flash-lite | Gemini writes the answers, in English and Arabic, from the consent-filtered screening file (no raw lab values). A refused injection attempt was confirmed. |
 | Explanations (`/api/explain`) | 3.1-flash-lite | `vertex-ai`, reworded from the rule engine's own text, about 2 seconds |
@@ -201,10 +203,12 @@ The chat is now an AI guide and says it is not a clinician. The old "simulated c
 
 Wording for the slides (pages 3, 7 and the diagram):
 
-> **Gemini on Vertex AI powers the advanced analytics and the screening guide:** multi-factor foresight, plain-language explanations, Google-Search-grounded research for the early-warning agents, and a chat guide that answers within fixed safety rules. Triage itself stays rule-based, and Gemini cannot change the pathway.
+> **Gemini on Vertex AI (built and tested; switched off in the public demo to keep cost at zero):** multi-factor foresight, plain-language explanations, research for the early-warning agents, and a chat guide that answers within fixed safety rules. It turns on with one setting. Triage stays rule-based either way, and Gemini cannot change the pathway.
 
-Diagram label: "Vertex Gemini: analytics, explanations, research, chat (rules still decide triage)". Drop the word "Optional".
+Diagram label (dashed box): "Vertex AI Gemini: analytics, explanations, research, chat. Built; off in public demo (cost). Rules decide triage."
+
+Do not write "Gemini runs live" or show a Gemini answer as if it came from the current public link. A screen recording from 18 Nov is fine if it is labelled with that date.
 
 Why Gemini is not used to decide triage: a model's output can't be audited by a clinician the way fixed rules can, and the whole safety story ("AI cannot override triage") depends on this. Keep that sentence.
 
-Note for page 9 (important): the Gemini foresight prompt includes each signal's drivers, which can contain entered lab values (for example `testosterone=250`, `glucose=...`, `sdf=...`), plus a lifestyle snapshot (heat index, air quality, sleep, stress, shift work, smoking, alcohol, BMI, hydration). No name, contact detail or account is sent. So say in the privacy bullet: "When the optional Gemini analytics run, the person's consented values are sent to Google Vertex AI to produce the analysis; nothing identifying is included." Do not say lab values never leave the browser.
+Note for page 9 (only if Gemini is switched back on): the Gemini foresight prompt includes each signal's drivers, which can contain entered lab values (for example `testosterone=250`, `glucose=...`, `sdf=...`), plus a lifestyle snapshot (heat index, air quality, sleep, stress, shift work, smoking, alcohol, BMI, hydration). No name, contact detail or account is sent. So say in the privacy bullet: "When the optional Gemini analytics run, the person's consented values are sent to Google Vertex AI to produce the analysis; nothing identifying is included." Do not say lab values never leave the browser.
