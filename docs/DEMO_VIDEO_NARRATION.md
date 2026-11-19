@@ -1,54 +1,59 @@
-# Demo video narration (about 2:50) — read aloud, in this order
+# Demo video narration (under 3:00) — read aloud, in this order
 
 Live site: https://seedshield-agents-gmv4iqwxgq-uc.a.run.app
 Before recording: open the site once to warm it up, pass the age gate, and turn on the self-report, clinical-lab and environment consents on Privacy.
-Say "demo persona" when you show Tariq. Do not say: clinically validated, live specialist network, partner clinics, pilot results, or that Gemini is running.
+Say "demo persona" when you show Tariq.
+Do not press "Run Gemini Agent" on What-if: Gemini is switched off in this public demo, so it returns "unavailable". Use the sliders only.
+Do not say: clinically validated, live specialist network, partner clinics, pilot results, or that Gemini is running.
 
 ## Narration
 
 **[0:00 · Home `/`]**
-SeedShield is a consent-first front door for male reproductive health in the Gulf: a safe next step, earlier. Screening, not diagnosis. For adults, eighteen and up, with no login, in Arabic and English. We never assume marriage or family plans.
+SeedShield is a consent-first front door for male reproductive health in the Gulf: a safe next step, earlier. Screening, not diagnosis. Adults eighteen and up, no login, in Arabic and English.
 
 **[0:15 · Privacy `/vault`]**
-This is Tariq, thirty-four. His file is synthetic: no real patient records. SeedShield only uses signals he agrees to share. Sharing is off by default, and doctor alerts and booking are opt-in. Consent is the safety filter: signals without consent are ignored.
+This is Tariq, thirty-four. His file is synthetic: no real patient records. Sharing is off by default, and doctor alerts and booking are opt-in. Non-consented signals are ignored.
 
-**[0:35 · Next step `/triage`, "Tell us about your week"]**
-From consented signals, like sleep, shifts and heat, the app suggests a next step and shows its reasons. Heat and air quality come live for the area. Studies associate them with semen quality; those are associations, not proof.
+**[0:30 · Next step `/triage`, "Tell us about your week"]**
+From consented signals, like sleep, shifts and heat, the app suggests a next step and shows its reasons. Heat and air quality are optional signals that studies associate with semen quality. They are associations, not proof.
 
-**[0:52 · Next step, "My lab results"]** (type 540 as nmol/L, then 250 ng/dL, then add a repeat of 260)
-Tariq can also type his own lab results, in either unit. A wrong unit is rejected. One low testosterone reading goes to primary care for a repeat test, not to a specialist. Two low readings open specialist review, and a doctor must approve it.
+**[1:05 · Next step, "My lab results"]** (type 540 as nmol/L, then 250 ng/dL, then add a repeat of 260)
+Tariq can type his own lab results in either unit. A wrong unit is rejected. One low testosterone reading goes to primary care for a repeat test. Two low readings open specialist review, which a doctor must approve.
 
-**[1:15 · same page, red-flag and thin-data demo tiles]**
-Sudden testicular pain goes straight to urgent care. With thin data, the app asks for more information instead of guessing. These rules are deterministic. AI cannot override them.
+**[1:25 · same page, red-flag and thin-data tiles]**
+Sudden testicular pain goes straight to urgent care. With thin data, the app asks for more information instead of guessing. These rules are deterministic, and AI cannot override them.
 
-**[1:28 · Next step, "Care access"]**
-The care step is self-arranged: a pointer to the regulator's directory, a private video link, a calendar file with neutral wording, and a summary Tariq approves himself. Nothing is sent by us.
+**[1:40 · Next step, "Care access"]**
+The care step is self-arranged: a regulator directory link, a private video link, a calendar file, and a summary Tariq approves himself.
 
-**[1:45 · Watch `/agents`]**
-Quiet Watch is the optional early-warning layer, built from seven agents. It can alert from consented signals, but it cannot override Safe Triage. Nothing goes to a doctor or gets booked unless the user opts in.
+**[1:55 · Watch `/agents`]**
+Quiet Watch is the optional early-warning layer. It alerts from consented signals but cannot override Safe Triage. Nothing goes to a doctor or gets booked without opt-in.
 
-**[2:03 · For reviewers `/analytics` (under More)]**
-On about five hundred synthetic profiles we show the funnel and a fairness check. Twenty-three of twenty-three triage safety cases pass, with a hundred and four automated checks in total. We also ran the rules on 1,726 men in public NHANES data, to check behavior, not accuracy. This shows how we would measure; it is not a real-world result.
+**[2:10 · AI guide `/chat`]** (ask: "What does my sleep result mean?")
+The AI guide answers within fixed safety rules. It is not a clinician. Each reply says who wrote it. In this public demo, replies come from the rules.
 
-**[2:25 · header buttons]** (click Discreet, then العربية)
-Discreet mode blurs sensitive text and gives a quick exit, and the app works in Arabic.
+**[2:25 · What-if, Dynamic Vitality Agent `/studio`]** (move the sleep or heat slider)
+On What-if, the Dynamic Vitality Agent lets us nudge sleep or heat, and the illustrative score updates. It is still screening, not a fertility prediction.
 
-**[2:35 · Our limits `/boundaries`]**
-Our limits: synthetic data only, clinician review requested but not received, no diagnosis, no medication advice. The Gemini analytics layer is built but switched off in this public demo to control cost. Screening, not diagnosis. Thank you.
+**[2:38 · Devices `/devices`, then Lab ranges `/ranges`]**
+Devices shows where the consented inputs come from, all labelled Simulated. Lab ranges shows WHO-aligned screening windows, labelled demo, not a lab report.
 
-## Optional extras (only if you are well under 3 minutes)
+**[2:48 · For reviewers `/analytics`]**
+On about five hundred synthetic profiles we show the funnel and a fairness check. Twenty-three of twenty-three triage cases pass, with a hundred and four automated checks. This measures the method; it is not a real-world result.
 
-- **Devices `/devices`:** "This is where Tariq's consented inputs come from: watch, environment, PC, scale, and simulated hormone and semen kits. All labelled Simulated. It is the file, not a diagnosis."
-- **My health `/analyst`:** "On My health, What-if lets us nudge sleep or heat. The illustrative score and next-step cues update from those inputs. Still screening, not a fertility prediction."
-- **Reminders `/reminders`:** "Reminders turns those cues into simple follow-ups you can complete."
-- **Lab ranges `/ranges`:** "Ranges shows WHO-aligned screening windows, labelled demo, not a lab report."
-- **Restore:** with Watch on, heat and air quality keep updating from the area feed. Press "Restore Tariq" when you are done.
+**[2:57 · Header]** (click Discreet, then العربية)
+Discreet mode blurs sensitive text. The app works in Arabic.
 
-## What changed from the earlier draft
+**[3:02 · Our limits `/boundaries`]**
+Our limits: synthetic data, clinician review requested but not received, no diagnosis, no medication advice. Screening, not diagnosis. Thank you.
 
-- "Omar" is now Tariq.
-- "Nineteen of nineteen safety tests" is now 23 of 23 triage cases and 104 automated checks.
-- Added the lab-entry flow, the self-arranged care step and the NHANES rule check.
-- Heat and air quality are live for the area; sleep and stress are typed or simulated, so the script no longer says they update in real time.
-- Added the Gemini line in the limits so the deck and the video agree.
-- Cut the devices, reminders, ranges and vitality-index sections to stay under three minutes; they are in the optional list.
+## Timing check
+
+Spoken words are about 354, which is roughly 2:20 to 2:40 at a normal pace. The cues are targets, not a stopwatch, and the screen clicks need about 20 seconds more. If you run long, shorten the reviewers and Devices/Ranges lines first.
+
+## Changes from the previous version
+
+- Added AI guide, What-if (Dynamic Vitality Agent), Devices and Lab ranges to the main narration.
+- Moved the reviewers page into the main flow.
+- Cut the Watch, care-access and privacy wording to make room.
+- Added the warning not to press Run Gemini Agent, since it returns "unavailable" while Gemini is off.
