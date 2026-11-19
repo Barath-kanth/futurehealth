@@ -28,7 +28,7 @@ Age gate (18+) → Consent vault → Consented signals
 | UI | Next.js 16 App Router, React 19, Tailwind, Zustand | Patient screens + reviewer board |
 | Safety core | `risk-engine.ts` + `consent-filter.ts` | Auditable Safe Triage (6 pathways) |
 | Early warning | 7 agents in `src/lib/agents/*` | Setup→Radar→Ingest→Monitor→Investigate→Notify→Care |
-| Explain / foresight | Vertex Gemini (optional) | Reword rules only; investigate enrichment; `/studio` |
+| Explain / foresight | Vertex Gemini (required) | Reword rules only; investigate enrichment; `/studio` |
 | Synthetic fairness | ~500 author-built cohort | Funnel / fairness demo — not real PHI |
 | APIs | `/api/agents/cycle`, `/api/agents/scheduled`, `/api/explain`, … | Cycle + scheduler + helpers |
 
@@ -40,7 +40,7 @@ Age gate (18+) → Consent vault → Consented signals
 | Radar | World research (Search / curated stubs) | Diagnose |
 | Ingest | Live streams + documents + social/env | Bypass consent |
 | Monitor | Personal limit breaches | Override triage |
-| Investigate | Evidence narrative (Gemini optional) | Change locked tier |
+| Investigate | Evidence narrative (Gemini, required) | Change locked tier |
 | Notify | In-app / simulated channels | Contact doctor without opt-in |
 | Care | Doctor bridge + booking **only if user opts in** | Auto-book |
 
@@ -75,7 +75,7 @@ Age gate (18+) → Consent vault → Consented signals
 | **Cloud Scheduler** | Triggers agent cycle every 6 hours | Secret header `X-Agent-Secret` |
 | **Firestore** | Persists cycles, findings, alerts, bookings | Prefer over always-on Cloud SQL |
 | **BigQuery** | Dataset `seedshield_events` · table `agent_events` | Analytics rows for reviewers |
-| **Vertex AI / Gemini** | Optional investigate enrich + explain | Fails closed to rules / stubs |
+| **Vertex AI / Gemini** | Investigate enrich + explain (required; off in public demo for cost) | Fails closed to rules / stubs |
 | **IAM** | Cloud Run SA → Datastore, BQ, AI Platform | Least privilege for demo |
 
 **Not used (on purpose for budget):** always-on Cloud SQL. Firestore covers findings/events/alerts.

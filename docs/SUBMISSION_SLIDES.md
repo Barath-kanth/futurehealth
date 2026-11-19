@@ -18,7 +18,7 @@ Men in the Gulf lack a private, early, trusted path for male reproductive **heal
 Paste the diagrams from `docs/ARCHITECTURE.md` (or redraw from Mermaid below).
 
 **One-line caption:**  
-Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Firestore + BigQuery · Gemini/Search optional, fail closed.
+Next.js on **Cloud Run** · Safe Triage (rules) · 7 agents (Scheduler) · Firestore + BigQuery · Gemini required for analytics (switched off in the public demo for cost; falls back to rules).
 
 ---
 

@@ -120,7 +120,7 @@ export async function runInvestigateAgent(opts: {
     });
   }
 
-  // Optional Gemini enrichment of the chain (does not override triage)
+  // Gemini enrichment of the chain, required design component (does not override triage; off in the public demo via GEMINI_ENABLED)
   let geminiUsed = false;
   const project = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT;
   if (project && geminiEnabled() && (monActive.length > 0 || opts.radar.length > 0)) {

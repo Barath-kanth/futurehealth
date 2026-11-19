@@ -50,7 +50,7 @@ Copy `.env.example` → `.env.local`. Set `AGENT_PLATFORM_URL` to the Cloud Run 
 7. Header **Reset** clears demo state  
 8. `npm run test:triage` · see [`TECH.md`](./TECH.md)  
 
-## Optional live Vertex AI
+## Vertex AI Gemini (required; off in the public demo for cost)
 
 Copy `.env.example` → `.env.local` and set:
 

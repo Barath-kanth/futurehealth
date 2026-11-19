@@ -28,7 +28,7 @@ Team size stays 2.
 Men need is a 2-person team. Barathakanthan (lead): DevOps and cloud engineer working with AI. Kogileshwaran: AI developer. We built and deployed SeedShield, a working prototype.
 Capabilities:
 • Full-stack: Next.js consent vault, Safe Triage, lab-entry form, live area heat and air quality, self-arranged care step (video link, calendar reminders, approved summary), discreet mode, English and Arabic.
-• Google Cloud: Cloud Run, Scheduler, Firestore and BigQuery live; Vertex AI Gemini built and tested, off in the public demo for cost.
+• Google Cloud: Cloud Run, Scheduler, Firestore, BigQuery live; Vertex AI Gemini required for analytics (off in demo for cost).
 • Safety: deterministic triage AI cannot override; consent filter first; screening, not diagnosis; 23 triage cases, 104 automated checks.
 • Evidence: cues follow WHO and AUA/ASRM guidance; rules also run on 1,726 men in public NHANES data (rule check, not accuracy). Clinical review requested, not received.
 • Data: demo persona is synthetic; users can type their own labs and shift answers; heat and air quality are live for the area. No patient records.
@@ -149,7 +149,7 @@ Where to find the new features:
 Replace the Integration line and add one line:
 
 ```
-Integration: start with consented self-entered inputs and live area data; add category-level EHR/lab pulls (not full chart dumps); keep Cloud Run + Firestore/BigQuery; switch on Vertex AI Gemini (built and tested, off in the public demo).
+Integration: start with consented self-entered inputs and live area data; add category-level EHR/lab pulls (not full chart dumps); keep Cloud Run + Firestore/BigQuery; Vertex AI Gemini (required; off in the public demo for cost).
 Referral: today the care step is self-arranged (private video link, calendar reminders, a summary the person approves and shares). Verified specialist and teleconsult routing is the next step and needs partner agreements and a clinician-verification process. The in-app clinic queue is labelled Demo only.
 ```
 
@@ -203,7 +203,7 @@ The chat is now an AI guide and says it is not a clinician. The old "simulated c
 
 Wording for the slides (pages 3, 7 and the diagram):
 
-> **Gemini on Vertex AI (built and tested; switched off in the public demo to control cost):** multi-factor foresight, plain-language explanations, research for the early-warning agents, and a chat guide that answers within fixed safety rules. It turns on with one setting. Triage stays rule-based either way, and Gemini cannot change the pathway.
+> **Gemini on Vertex AI (required for analytics; switched off in the public demo for cost):** multi-factor foresight, plain-language explanations, research for the early-warning agents, and a chat guide that answers within fixed safety rules. It turns on with one setting. Triage stays rule-based either way, and Gemini cannot change the pathway.
 
 Diagram label (dashed box): "Vertex AI Gemini: analytics, explanations, research, chat. Built; off in public demo (cost). Rules decide triage."
 
