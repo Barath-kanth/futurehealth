@@ -18,8 +18,8 @@ export default function ChatPage() {
         </div>
         <p className="mt-2 text-sm text-[var(--muted)]">
           {ar
-            ? "مرشد ذكي يعمل بـ Gemini ضمن قواعد أمان ثابتة — ليس طبيبًا. لا نصيحة ببدء/إيقاف دواء. الفرز الآمن هو المرجع، وأسئلة الأمان تُجاب بقواعد ثابتة قبل أي نموذج."
-            : "An AI guide powered by Gemini inside fixed safety rules. It is not a clinician. No start/stop medication advice. Safe Triage is the source of truth, and safety questions are answered by fixed rules before any model sees them."}
+            ? "مرشد فحص مصمم لـ Gemini ضمن قواعد أمان ثابتة — ليس طبيبًا. لا نصيحة ببدء/إيقاف دواء. الفرز الآمن هو المرجع، وأسئلة الأمان تُجاب بقواعد ثابتة قبل أي نموذج. كل رد يوضح هل كتبه Gemini أم القواعد."
+            : "A screening guide built for Gemini inside fixed safety rules. It is not a clinician. No start/stop medication advice. Safe Triage is the source of truth, and safety questions are answered by fixed rules before any model sees them. Each reply says whether Gemini or the rules wrote it."}
         </p>
         <p className="mt-1 text-xs text-[var(--muted)]">
           {doctorAlertOptIn

@@ -8,6 +8,10 @@ REGION="${GCP_REGION:-us-central1}"
 SERVICE="${CLOUD_RUN_SERVICE:-seedshield-agents}"
 DATASET="${BQ_DATASET:-seedshield_events}"
 SECRET="${AGENT_SCHEDULER_SECRET:-seedshield-scheduler-demo}"
+# Zero-cost defaults: Gemini (billed per token) off, agent events kept in memory instead of
+# Firestore/BigQuery. Turn on with GEMINI_ENABLED=true AGENT_PERSIST=gcp.
+GEMINI_ENABLED="${GEMINI_ENABLED:-false}"
+AGENT_PERSIST="${AGENT_PERSIST:-memory}"
 
 echo "==> Project $PROJECT / region $REGION"
 
@@ -36,12 +40,12 @@ gcloud run deploy "$SERVICE" \
   --region="$REGION" \
   --allow-unauthenticated \
   --memory=2Gi \
-  --cpu=2 \
+  --cpu=1 \
   --min-instances=0 \
-  --max-instances=3 \
+  --max-instances=1 \
   --timeout=300 \
   --cpu-boost \
-  --update-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT,BQ_DATASET=$DATASET,FIRESTORE_COLLECTION=seedshield,AGENT_SCHEDULER_SECRET=$SECRET,AGENT_PERSIST=gcp,VERTEX_MODEL=gemini-3.8-flash,GOOGLE_CLOUD_LOCATION=global${OPENWEATHER_API_KEY:+,OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY}" \
+  --update-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT,BQ_DATASET=$DATASET,FIRESTORE_COLLECTION=seedshield,AGENT_SCHEDULER_SECRET=$SECRET,AGENT_PERSIST=$AGENT_PERSIST,GEMINI_ENABLED=$GEMINI_ENABLED,VERTEX_MODEL=gemini-3.8-flash,GOOGLE_CLOUD_LOCATION=global${OPENWEATHER_API_KEY:+,OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY}" \
   --quiet
 
 URL="$(gcloud run services describe "$SERVICE" --region="$REGION" --format='value(status.url)')"
@@ -65,4 +69,4 @@ echo "  Cloud Run:  $URL"
 echo "  Agents UI:  $URL/agents"
 echo "  Scheduler:  $JOB (every 6h)"
 echo "  Set local AGENT_PLATFORM_URL=$URL if Next should proxy to Cloud Run"
-echo "  min-instances=0 (scale to zero, request-based CPU) to avoid idle charges. Expect a cold start on the first visit."
+echo "  min-instances=0, max 1 instance, GEMINI_ENABLED=$GEMINI_ENABLED, AGENT_PERSIST=$AGENT_PERSIST. Expect a cold start on the first visit."

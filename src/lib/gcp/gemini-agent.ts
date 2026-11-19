@@ -1,4 +1,10 @@
-import { hasGcpCredentials, vertexInit, vertexModelName } from "./adc";
+import {
+  GEMINI_OFF_REASON,
+  geminiEnabled,
+  hasGcpCredentials,
+  vertexInit,
+  vertexModelName,
+} from "./adc";
 import type {
   IndependentVariables,
   Locale,
@@ -60,6 +66,14 @@ export async function runGeminiVitalityAgent(opts: {
       model: modelName,
       reasonIfUnavailable:
         "Gemini Dynamic Agent requires Vertex AI credentials. Deterministic triage still works; this foresight feature is Gemini-only by design.",
+    };
+  }
+  if (!geminiEnabled()) {
+    return {
+      available: false,
+      provider: "unavailable",
+      model: modelName,
+      reasonIfUnavailable: GEMINI_OFF_REASON,
     };
   }
 

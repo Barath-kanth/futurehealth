@@ -33,7 +33,7 @@ export function DoctorChat() {
     <div className="flex h-[min(70vh,640px)] flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--mist)]">
       <div className="border-b border-[var(--line)] bg-[var(--cedar)] px-4 py-3 text-[var(--mist)]">
         <div className="text-sm font-semibold">
-          {ar ? "مرشد الفحص الذكي (Gemini)" : "AI screening guide (Gemini)"}
+          {ar ? "مرشد الفحص الذكي" : "AI screening guide"}
         </div>
         <div className="text-[11px] text-[var(--mist)]/75">
           {ar

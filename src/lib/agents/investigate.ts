@@ -1,4 +1,4 @@
-import { vertexInit, vertexFastModelName } from "../gcp/adc";
+import { geminiEnabled, vertexInit, vertexFastModelName } from "../gcp/adc";
 import type { RiskAssessment } from "../types";
 import type { AgentAlert, AgentFinding, SetupConfig } from "./types";
 
@@ -123,11 +123,7 @@ export async function runInvestigateAgent(opts: {
   // Optional Gemini enrichment of the chain (does not override triage)
   let geminiUsed = false;
   const project = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT;
-  const hasAdc =
-    Boolean(process.env.GOOGLE_APPLICATION_CREDENTIALS) ||
-    Boolean(process.env.K_SERVICE) || // Cloud Run workload identity
-    Boolean(process.env.FIREBASE_CONFIG);
-  if (project && hasAdc && (monActive.length > 0 || opts.radar.length > 0)) {
+  if (project && geminiEnabled() && (monActive.length > 0 || opts.radar.length > 0)) {
     try {
       const enriched = await enrichWithGemini(opts, findings[0]!);
       if (enriched) {

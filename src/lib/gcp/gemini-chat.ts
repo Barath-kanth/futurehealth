@@ -1,6 +1,6 @@
 import type { IndependentVariables, Locale, RiskAssessment } from "../types";
 import { isSafeChatReply } from "../chat-guard";
-import { hasGcpCredentials, vertexInit, vertexFastModelName } from "./adc";
+import { geminiEnabled, vertexInit, vertexFastModelName } from "./adc";
 
 export type ChatTurn = { role: "user" | "guide"; text: string };
 
@@ -18,7 +18,7 @@ export async function chatWithGemini(opts: {
   history?: ChatTurn[];
 }): Promise<{ text: string; model: string } | null> {
   const project = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT;
-  if (!project || !hasGcpCredentials()) return null;
+  if (!project || !geminiEnabled()) return null;
 
   const ar = opts.locale === "ar";
   const modelName = vertexFastModelName();

@@ -1,4 +1,4 @@
-import { hasGcpCredentials, vertexInit, vertexFastModelName } from "./adc";
+import { geminiEnabled, vertexInit, vertexFastModelName } from "./adc";
 import type { Locale, RiskAssessment } from "../types";
 
 /**
@@ -28,7 +28,7 @@ export async function explainAssessment(opts: {
   if (
     !opts.forceLocal &&
     project &&
-    hasGcpCredentials()
+    geminiEnabled()
   ) {
     try {
       const { VertexAI } = await import("@google-cloud/vertexai");

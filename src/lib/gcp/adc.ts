@@ -8,6 +8,17 @@ export function hasGcpCredentials(): boolean {
 }
 
 /**
+ * Gemini calls are billed per token. GEMINI_ENABLED=false turns every Gemini feature off
+ * (chat, explain, foresight, investigate, radar search); the rule-based paths take over.
+ */
+export function geminiEnabled(): boolean {
+  return process.env.GEMINI_ENABLED !== "false" && hasGcpCredentials();
+}
+
+export const GEMINI_OFF_REASON =
+  "Gemini is switched off in this public demo to keep cloud cost at zero. Deterministic triage still works; this feature turns on with GEMINI_ENABLED=true.";
+
+/**
  * Gemini 3.x models on Vertex AI are served from the "global" location.
  * Gemini 2.0 and 2.5 Flash are retired, so the default is gemini-3.8-flash.
  */
