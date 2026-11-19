@@ -72,6 +72,19 @@ function pickCurated(topics: string[]): SearchHit[] {
   });
 }
 
+/** No-cost path: curated, clearly labelled public-source stubs (no Google Search calls). */
+export function curatedResearch(topics: string[]): {
+  hits: SearchHit[];
+  provider: string;
+  searchUsed: boolean;
+} {
+  return {
+    hits: pickCurated(topics),
+    provider: "curated-public-stubs",
+    searchUsed: false,
+  };
+}
+
 /** Live Google Search via Gemini grounding when Vertex is configured. */
 export async function searchWorldwideResearch(topics: string[]): Promise<{
   hits: SearchHit[];

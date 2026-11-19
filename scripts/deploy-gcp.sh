@@ -37,11 +37,10 @@ gcloud run deploy "$SERVICE" \
   --allow-unauthenticated \
   --memory=2Gi \
   --cpu=2 \
-  --min-instances=1 \
+  --min-instances=0 \
   --max-instances=3 \
   --timeout=300 \
   --cpu-boost \
-  --no-cpu-throttling \
   --update-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT,BQ_DATASET=$DATASET,FIRESTORE_COLLECTION=seedshield,AGENT_SCHEDULER_SECRET=$SECRET,AGENT_PERSIST=gcp,VERTEX_MODEL=gemini-3.8-flash,GOOGLE_CLOUD_LOCATION=global${OPENWEATHER_API_KEY:+,OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY}" \
   --quiet
 
@@ -66,4 +65,4 @@ echo "  Cloud Run:  $URL"
 echo "  Agents UI:  $URL/agents"
 echo "  Scheduler:  $JOB (every 6h)"
 echo "  Set local AGENT_PLATFORM_URL=$URL if Next should proxy to Cloud Run"
-echo "  min-instances=1 + 2Gi + always-on CPU (avoids OOM / 10s stalls). Set min=0 + cpu-throttling after judging to save budget."
+echo "  min-instances=0 (scale to zero, request-based CPU) to avoid idle charges. Expect a cold start on the first visit."

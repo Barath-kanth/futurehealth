@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     locale: "en",
     memberId: body.memberId ?? "member-scheduler",
     requestBooking: body.requestBooking ?? false,
-    setupOverrides: { googleSearchEnabled: true },
+    setupOverrides: { googleSearchEnabled: false },
   });
 
   return NextResponse.json({

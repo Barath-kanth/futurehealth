@@ -92,7 +92,7 @@ export default function WatchPage() {
           variables,
           consents,
           locale,
-          googleSearchEnabled: true,
+          googleSearchEnabled: false,
           requestBooking: allowBook,
           bookingKind:
             assessment.triage.tier === "urgent"

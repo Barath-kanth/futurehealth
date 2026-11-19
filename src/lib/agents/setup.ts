@@ -12,7 +12,7 @@ export const DEFAULT_SETUP: SetupConfig = {
     "Abu Dhabi air quality male health",
     "AUA male infertility evaluation update",
   ],
-  googleSearchEnabled: true,
+  googleSearchEnabled: false, // grounding is billed per search; enable only deliberately
   schedulerCron: "0 */6 * * *",
   bigQueryDataset: "seedshield_events",
   cloudRunService: "seedshield-agents",

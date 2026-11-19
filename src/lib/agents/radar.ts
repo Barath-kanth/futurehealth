@@ -1,4 +1,4 @@
-import { searchWorldwideResearch } from "./search";
+import { curatedResearch, searchWorldwideResearch } from "./search";
 import type { AgentFinding, SetupConfig } from "./types";
 
 /** Radar agent — monitors world research / events relevant to male vitality screening. */
@@ -7,13 +7,11 @@ export async function runRadarAgent(config: SetupConfig): Promise<{
   searchUsed: boolean;
   provider: string;
 }> {
+  // Live grounding bills per search (Vertex AI "Grounding with Google Search").
+  // Off by default; the curated stubs are labelled as such in the UI.
   const { hits, searchUsed, provider } = config.googleSearchEnabled
     ? await searchWorldwideResearch(config.researchTopics)
-    : {
-        hits: [],
-        searchUsed: false,
-        provider: "search-disabled",
-      };
+    : curatedResearch(config.researchTopics);
 
   const findings: AgentFinding[] = hits.map((h, i) => ({
     id: `radar-${Date.now()}-${i}`,
